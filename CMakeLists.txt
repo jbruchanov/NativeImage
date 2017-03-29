@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(NativeImageApp)
 
+add_definitions(-DDESKTOP)
+
 set(GOOGLE_TEST_SOURCE lib/googletest)
 include_directories(
         ${GOOGLE_TEST_SOURCE}
@@ -10,6 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(json11)
 
 set(SOURCE_FILES main.cpp)
 add_executable(NativeImageApp ${SOURCE_FILES})

@@ -13,5 +13,5 @@ else()
     message(ERROR missing JNI)
 endif()
 
-
-add_library(NativeImageLib STATIC ${SOURCE_FILES} JNI_JpegImage.h)target_link_libraries(NativeImageLib jpeg json11)
+add_library(NativeImageLib STATIC ${SOURCE_FILES} JNI_JpegImage.h JPEGImage.cpp JPEGImage.hpp Errors.h LogHelper.h ImageMetaData.h)
+target_link_libraries(NativeImageLib jpeg json11)

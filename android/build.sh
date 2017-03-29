@@ -6,6 +6,14 @@ JNI="jni" #must be 'jni'
 rm -R $JNI 2> /dev/null 
 rm -R libs 2> /dev/null 
 rm -R obj 2> /dev/null 
+rm -R libjpeg 2> /dev/null 
+
+if [ ! -d libjpeg ]; then
+  	mkdir libjpeg
+  	LIB_JPEG="$ANDROID_NDK/sources/libjpeg/9a/*"
+  	#is there better way instead of eval ?
+	eval "cp -a $LIB_JPEG ./libjpeg 2> /dev/null"	
+fi
 
 #copy all makefiles into jni folder
 mkdir $JNI
@@ -14,7 +22,11 @@ cp Application.mk ./$JNI
 
 cd $JNI
 #be sure it's targeting crystax folder! eg '/home/user/crystax-ndk-10.3.2'
-eval "$ANDROID_NDK/ndk-build"
+eval "$ANDROID_NDK/ndk-build NDK_DEBUG=1"
 
 cd -
 rm -R $JNI 2> /dev/null 
+
+rm -R /media/sf_Shared/libs
+mkdir /media/sf_Shared/libs
+cp -a ./libs /media/sf_Shared
