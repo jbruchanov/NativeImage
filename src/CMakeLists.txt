@@ -14,4 +14,4 @@ else()
 endif()
 
 
-add_library(NativeImageLib STATIC ${SOURCE_FILES} JNI_JpegImage.h)
+add_library(NativeImageLib STATIC ${SOURCE_FILES} JNI_JpegImage.h)target_link_libraries(NativeImageLib jpeg json11)
