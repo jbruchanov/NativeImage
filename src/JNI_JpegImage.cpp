@@ -48,15 +48,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_loadImage
 (JNIEnv *env, jobject obj, jstring jpath) {
     JPEGImage *image = getObject(env, obj);
     const char *path = env->GetStringUTFChars(jpath, 0);
-    LOGD("Trying reference\n");
-    LOGD("Trying reference:%d\n", image->test(10, 20));
-    LOGD("LoadingPath:%s\n", path);
     FILE * infile;
     if ((infile = fopen(path, "rb")) == NULL) {
         LOGD("can't open %s\n", path);
         return (jint)1;
     } else {
-        LOGD("File opened:%s\n", path);
         fclose(infile);
     }
 
