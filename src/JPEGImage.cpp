@@ -6,33 +6,13 @@
 #include <setjmp.h>
 #include "JPEGImage.hpp"
 #include "Errors.h"
-#include "jpeglib.h"
 #include "LogHelper.h"
 
-struct my_error_mgr {
+struct _Error {
     struct jpeg_error_mgr pub;	/* "public" fields */
-
     jmp_buf setjmp_buffer;	/* for return to caller */
 };
-
-typedef struct my_error_mgr * my_error_ptr;
-
-char jpegLastErrorMsg[JMSG_LENGTH_MAX];
-
-METHODDEF(void)
-my_error_exit (j_common_ptr cinfo)
-{
-    /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-    my_error_ptr myerr = (my_error_ptr) cinfo->err;
-
-    /* Always display the message. */
-    /* We could postpone this until after returning, if we chose. */
-//    (*cinfo->err->output_message) (cinfo, jpegLastErrorMsg);
-    ( *(cinfo->err->format_message) ) (cinfo, jpegLastErrorMsg);
-
-    /* Return control to the setjmp point */
-    longjmp(myerr->setjmp_buffer, 1);
-}
+typedef struct _Error * _ErrorPtr;
 
 ImageMetaData JPEGImage::getMetaData() {
     return mMetaData;
@@ -41,8 +21,12 @@ ImageMetaData JPEGImage::getMetaData() {
 JPEGImage::JPEGImage() {
     mMetaData = {};
 }
+
+string JPEGImage::getLastError() {
+    return std::string(mLastError);
+}
+
 int JPEGImage::loadImage(const char* path) {
-    LOGD("Inside");
     mMetaData = {};//clear metaData
 
     /* This struct contains the JPEG decompression parameters and pointers to
@@ -53,7 +37,7 @@ int JPEGImage::loadImage(const char* path) {
      * Note that this struct must live as long as the main JPEG parameter
      * struct, to avoid dangling-pointer problems.
      */
-    struct my_error_mgr jerr;
+    struct _Error jerr;
     /* More stuff */
     FILE * infile;		/* source file */
     JSAMPARRAY buffer;		/* Output row buffer */
@@ -74,16 +58,21 @@ int JPEGImage::loadImage(const char* path) {
 
     /* We set up the normal JPEG error routines, then override error_exit. */
     cinfo.err = jpeg_std_error(&jerr.pub);
-    jerr.pub.error_exit = my_error_exit;
+
+    jerr.pub.error_exit = [](j_common_ptr cinfo) {
+        _ErrorPtr myerr = (_ErrorPtr) cinfo->err;
+        longjmp(myerr->setjmp_buffer, 1);
+    };
 
     /* Establish the setjmp return context for my_error_exit to use. */
     if (setjmp(jerr.setjmp_buffer)) {
         /* If we get here, the JPEG code has signaled an error.
          * We need to clean up the JPEG object, close the input file, and return.
          */
+        cinfo.err->format_message((j_common_ptr) &cinfo, mLastError);
         jpeg_destroy_decompress(&cinfo);
         fclose(infile);
-        return 0;
+        return cinfo.err->msg_code;
     }
     /* Now we can initialize the JPEG decompression object. */
     jpeg_create_decompress(&cinfo);
@@ -171,9 +160,3 @@ int JPEGImage::loadImage(const char* path) {
     /* And we're done! */
     return NO_ERR;
 }
-
-int JPEGImage::test(int a, int b) {
-    return a + b;
-}
-
-

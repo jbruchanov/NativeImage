@@ -7,21 +7,22 @@
 
 #include <string>
 #include "ImageMetaData.h"
+#include "jpeglib.h"
 
 using namespace std;
 
 class JPEGImage {
 
 private:
-    string mFileName;
     ImageMetaData mMetaData;
+    char mLastError[JMSG_LENGTH_MAX];
 
 public:
     JPEGImage();
 
     int loadImage(const char* path);
     ImageMetaData getMetaData();
-    int test(int a, int b);
+    string getLastError();
 };
 
 
