@@ -12,6 +12,12 @@ set(SOURCE_FILES sample/_sample.cpp JPEGImageTest.cpp)
 
 add_subdirectory(lib/googletest)
 
+file(GLOB TEST_ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/assets/*)
+foreach(file ${TEST_ASSETS})
+    file(COPY ${file} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/assets)
+endforeach()
+
+
 add_executable(NativeImageTest ${SOURCE_FILES})
 
 target_link_libraries(NativeImageTest NativeImageLib gtest gtest_main)
