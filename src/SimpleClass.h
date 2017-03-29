@@ -1,5 +1,5 @@
 //
-// Created by scurab on 29/03/17.
+// Created by jbruchanov on 29/03/17.
 //
 
 #ifndef NATIVEIMAGEAPP_SIMPLECLASS_H
