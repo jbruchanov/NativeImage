@@ -9,10 +9,10 @@
 
 #include <stdio.h>
 
-#define  LOGE(...)  printf("ERR:");printf(__VA_ARGS__)
-#define  LOGW(...)  printf("WARNING:");printf(__VA_ARGS__)
-#define  LOGD(...)  printf("DEBUG:");printf(__VA_ARGS__)
-#define  LOGI(...)  printf("INFO:");printf(__VA_ARGS__)
+#define  LOGE(...)  printf("ERR:");printf(__VA_ARGS__);printf("\n");
+#define  LOGW(...)  printf("WARNING:");printf(__VA_ARGS__);printf("\n");
+#define  LOGD(...)  printf("DEBUG:");printf(__VA_ARGS__);printf("\n");
+#define  LOGI(...)  printf("INFO:");printf(__VA_ARGS__);printf("\n");
 
 #else
 
