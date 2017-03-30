@@ -69,3 +69,18 @@ TEST(JPEGImage, FreesMemoryOnNewLoad) {
     ASSERT_EQ(nullptr, data.rawData);
     ASSERT_EQ(0, data.size);
 }
+
+TEST(JPEGImage, SetPixels) {
+    string f = JPEG_3X1_PX;
+    JPEGImage image;
+    image.loadImage(f.c_str());
+    int data[3];
+    int size = sizeof(data);
+    memset(&data, 0, size);
+    image.setPixels(&data[0]);
+
+    int *ptr = image.getRawData().rawData;
+    ASSERT_EQ(ptr[0], data[0]);
+    ASSERT_EQ(ptr[1], data[1]);
+    ASSERT_EQ(ptr[2], data[2]);
+}

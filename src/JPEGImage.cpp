@@ -178,6 +178,7 @@ RawData JPEGImage::getRawData() {
 
 void JPEGImage::setPixels(int *target) {
     if (mRawData != NULL && target != NULL) {
-
+        RawData data = getRawData();
+        memcpy(target, data.rawData, data.size * sizeof(int));
     }
 }
