@@ -24,7 +24,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_C_INCLUDES := ../libjpeg/include
 FILE_LIST := $(wildcard $(LOCAL_PATH)/../../src/*.cpp) $(wildcard $(LOCAL_PATH)/../../json11/*.cpp) 
-LOCAL_LDLIBS := -llog
+LOCAL_LDLIBS := -llog -ljnigraphics
 LOCAL_MODULE    := main
 LOCAL_SHARED_LIBRARIES := jpeg
 #LOCAL_SRC_FILES := main.cpp appjni.cpp json11.cpp
