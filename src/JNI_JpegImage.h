@@ -9,35 +9,43 @@ extern "C" {
 #endif
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    init
+ * Method:    _init
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_init
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
         (JNIEnv *, jobject);
 
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    loadImage
+ * Method:    _loadImage
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_loadImage
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
         (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    getMetaData
+ * Method:    _getMetaData
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_getMetaData
+JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMetaData
         (JNIEnv *, jobject);
 
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    dispose
+ * Method:    _dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_dispose
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1dispose
         (JNIEnv *, jobject);
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_JPEGImage
+ * Method:    _setPixels
+ * Signature: (Ljava/lang/Object;)V
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
+        (JNIEnv *, jobject, jobject);
 
 #ifdef __cplusplus
 }

@@ -15,12 +15,20 @@
 using namespace json11;
 using namespace std;
 
+JPEGImage* getObject(JNIEnv *env, jobject obj) {
+    jclass clazz = env->FindClass(CLASS_NAME);
+    jmethodID methodId = env->GetMethodID(clazz, METHOD_GET_NATIVE_REF, "()J");//long getNativeRef()
+    // Call the method on the object
+    jlong ptr = env->CallLongMethod(obj, methodId);
+    return (JPEGImage*)ptr;
+}
+
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage
  * Method:    init
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_init
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
         (JNIEnv *env, jobject obj) {
     jclass clazz = env->FindClass(CLASS_NAME);
     jmethodID methodId = env->GetMethodID(clazz, METHOD_SET_NATIVE_REF, "(J)V");//void onSetNativeRef(long ref)
@@ -44,7 +52,7 @@ JPEGImage* getObject(JNIEnv *env, jobject obj) {
  * Method:    loadImage
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_loadImage
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
 (JNIEnv *env, jobject obj, jstring jpath) {
     JPEGImage *image = getObject(env, obj);
     const char *path = env->GetStringUTFChars(jpath, 0);
@@ -67,7 +75,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_loadImage
  * Method:    getDetails
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_getMetaData
+JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMetaData
         (JNIEnv *env, jobject obj) {
     JPEGImage *image = getObject(env, obj);
     const ImageMetaData metaData = image->getMetaData();
@@ -85,7 +93,7 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_getMetaD
  * Method:    dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage_dispose
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1dispose
 (JNIEnv *env, jobject obj) {
     JPEGImage *image = getObject(env, obj);
     LOGD("JPEGImagePointer:%ld", (long)image);
