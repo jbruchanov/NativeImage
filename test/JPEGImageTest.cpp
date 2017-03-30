@@ -33,6 +33,39 @@ TEST(JPEGImage, LoadInvalidImage) {
     string f = JPEG_INVALID;
     JPEGImage image;
     int result = image.loadImage(f.c_str());
-    string err = image.getLastError();
     ASSERT_EQ(JERR_NO_SOI, result);
+    string err = image.getAndClearLastError();
+    string err2 = image.getAndClearLastError();
+    ASSERT_EQ(0, err2.length());
+}
+
+TEST(JPEGImage, LoadRawData) {
+    string f = JPEG_3X1_PX;
+    JPEGImage image;
+    image.loadImage(f.c_str());
+    RawData raw = image.getRawData();
+    int *ptr = raw.rawData;
+    ASSERT_EQ(3, raw.size);
+    int p1 = ptr[0];
+    int p2 = ptr[1];
+    int p3 = ptr[2];
+
+    int c1 = BITMAP_COLOR(p1);
+    int c2 = BITMAP_COLOR(p2);
+    int c3 = BITMAP_COLOR(p3);
+
+    ASSERT_EQ(0xFFA42725, c1);
+    ASSERT_EQ(0xFFFFDAD8, c2);
+    ASSERT_EQ(0xFF000000, c3);
+}
+
+TEST(JPEGImage, FreesMemoryOnNewLoad) {
+    string f = JPEG_3X1_PX;
+    JPEGImage image;
+    image.loadImage(f.c_str());
+    f = JPEG_INVALID;
+    image.loadImage(f.c_str());
+    RawData data = image.getRawData();
+    ASSERT_EQ(nullptr, data.rawData);
+    ASSERT_EQ(0, data.size);
 }
