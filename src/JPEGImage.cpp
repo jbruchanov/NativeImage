@@ -95,10 +95,17 @@ int JPEGImage::loadImage(const char *path) {
     /* Step 3: read file parameters with jpeg_read_header() */
     (void) jpeg_read_header(&cinfo, TRUE);
 
+    int result = NO_ERR;
+
     mMetaData.imageWidth = cinfo.image_width;
     mMetaData.imageHeight = cinfo.image_height;
     mMetaData.componentSize = cinfo.num_components;
-    mRawData = new int[mMetaData.imageWidth * mMetaData.imageHeight];
+    try {
+        mRawData = new int[mMetaData.imageWidth * mMetaData.imageHeight];
+    } catch (...) {
+        result = OUT_OF_MEMORY;
+    }
+
 
     /* Step 4: set parameters for decompression */
 
@@ -106,42 +113,44 @@ int JPEGImage::loadImage(const char *path) {
      * jpeg_read_header(), so we do nothing here.
      */
 
-    /* Step 5: Start decompressor */
-    jpeg_start_decompress(&cinfo);
-    /* JSAMPLEs per row in output buffer */
-    row_stride = cinfo.output_width * cinfo.output_components;
-    /* Make a one-row-high sample array that will go away when done with image */
-    buffer = (*cinfo.mem->alloc_sarray)
-            ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+    if (NO_ERR == result) {
+        /* Step 5: Start decompressor */
+        jpeg_start_decompress(&cinfo);
+        /* JSAMPLEs per row in output buffer */
+        row_stride = cinfo.output_width * cinfo.output_components;
+        /* Make a one-row-high sample array that will go away when done with image */
+        buffer = (*cinfo.mem->alloc_sarray)
+                ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-    /* Step 6: while (scan lines remain to be read) */
-    /*           jpeg_read_scanlines(...); */
+        /* Step 6: while (scan lines remain to be read) */
+        /*           jpeg_read_scanlines(...); */
 
-    /* Here we use the library's state variable cinfo.output_scanline as the
-     * loop counter, so that we don't have to keep track ourselves.
-     */
-    int index = 0;
-    while (cinfo.output_scanline < cinfo.output_height) {
-        /* jpeg_read_scanlines expects an array of pointers to scanlines.
-         * Here the array is only one element long, but you could ask for
-         * more than one scanline at a time if that's more convenient.
+        /* Here we use the library's state variable cinfo.output_scanline as the
+         * loop counter, so that we don't have to keep track ourselves.
          */
-        (void) jpeg_read_scanlines(&cinfo, buffer, 1);
-        /* Assume put_scanline_someplace wants a pointer and sample count. */
-        storeRawData(buffer[0], row_stride, cinfo.num_components, &index);
+        int index = 0;
+        while (cinfo.output_scanline < cinfo.output_height) {
+            /* jpeg_read_scanlines expects an array of pointers to scanlines.
+             * Here the array is only one element long, but you could ask for
+             * more than one scanline at a time if that's more convenient.
+             */
+            (void) jpeg_read_scanlines(&cinfo, buffer, 1);
+            /* Assume put_scanline_someplace wants a pointer and sample count. */
+            storeRawData(buffer[0], row_stride, cinfo.num_components, &index);
+        }
+
+        /* Step 7: Finish decompression */
+
+        (void) jpeg_finish_decompress(&cinfo);
+        /* We can ignore the return value since suspension is not possible
+         * with the stdio data source.
+         */
+
+        /* Step 8: Release JPEG decompression object */
+
+        /* This is an important step since it will release a good deal of memory. */
+        jpeg_destroy_decompress(&cinfo);
     }
-
-    /* Step 7: Finish decompression */
-
-    (void) jpeg_finish_decompress(&cinfo);
-    /* We can ignore the return value since suspension is not possible
-     * with the stdio data source.
-     */
-
-    /* Step 8: Release JPEG decompression object */
-
-    /* This is an important step since it will release a good deal of memory. */
-    jpeg_destroy_decompress(&cinfo);
 
     /* After finish_decompress, we can close the input file.
      * Here we postpone it until after no more JPEG errors are possible,
@@ -155,7 +164,7 @@ int JPEGImage::loadImage(const char *path) {
      */
 
     /* And we're done! */
-    return NO_ERR;
+    return result;
 }
 
 void JPEGImage::storeRawData(JSAMPROW row, int stride, int rawDataIndex, int *pInt) {

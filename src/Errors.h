@@ -7,6 +7,7 @@
 
 #define NO_ERR 0
 #define CANT_OPEN_FILE -1
+#define OUT_OF_MEMORY -2
 #define NOT_SAME_RESOLUTION -201
 #define INVALID_BITMAP_FORMAT -202
 
