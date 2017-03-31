@@ -14,7 +14,6 @@
 #
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
-LOCAL_C_INCLUDES := ../libjpeg/include
 FILE_LIST := $(wildcard $(LOCAL_PATH)/../../src/*.cpp) $(wildcard $(LOCAL_PATH)/../../json11/*.cpp) 
 LOCAL_LDLIBS := -llog -ljnigraphics
 LOCAL_MODULE    := main
