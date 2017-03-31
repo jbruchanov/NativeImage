@@ -14,6 +14,7 @@
 #include "JPEGImage.hpp"
 #include "LogHelper.h"
 #include "Errors.h"
+#include "JNIHelper.h"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/JPEGImage"
 #define METHOD_SET_NATIVE_REF "onSetNativeRef"
@@ -54,19 +55,28 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
  */
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
 (JNIEnv *env, jobject obj, jstring jpath) {
-    JPEGImage *image = getObject(env, obj);
-    const char *path = env->GetStringUTFChars(jpath, 0);
-    FILE * infile;
-    if ((infile = fopen(path, "rb")) == NULL) {
-        LOGD("can't open %s\n", path);
-        return (jint)1;
-    } else {
-        fclose(infile);
-    }
+    int result = JNI_ERR;
+    try {
+        JPEGImage *image = getObject(env, obj);
+        const char *path = env->GetStringUTFChars(jpath, 0);
+        FILE *infile;
+        if ((infile = fopen(path, "rb")) == NULL) {
+            LOGD("can't open %s\n", path);
+            return (jint) 1;
+        } else {
+            fclose(infile);
+        }
 
-    int result = image->loadImage(path);
-    LOGD("LoadedResult:%d", result);
-    env->ReleaseStringUTFChars(jpath, path);
+        result = image->loadImage(path);
+        LOGD("LoadedResult:%d", result);
+        if (OUT_OF_MEMORY == result) {
+            string errMsg = string("Unable to load:'") + path + "'";
+            result = throwOutOfMemoryError(env, errMsg.c_str());
+        }
+        env->ReleaseStringUTFChars(jpath, path);
+    } catch (...) {
+        LOGE("CRASH!!!!!!");
+    }
     return (jint)result;
 }
 
@@ -81,8 +91,9 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMet
     const ImageMetaData metaData = image->getMetaData();
 
     Json result = Json::object {
-            { "imageWidth", (int)metaData.imageWidth },
-            { "imageHeight", (int)metaData.imageHeight }};
+            {"imageWidth",    metaData.imageWidth},
+            {"imageHeight",   metaData.imageHeight},
+            {"componentSize", metaData.componentSize}};
 
     string json = result.dump();
     return (*env).NewStringUTF(json.c_str());
@@ -141,6 +152,30 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
     }
     //well not sure what to do here if it's not unlocked ?
     return (jint) v;
+}
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_JPEGImage
+ * Method:    _rotate
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1rotate
+        (JNIEnv *env, jobject obj, jint angle) {
+    JPEGImage *image = getObject(env, obj);
+    switch ((int) angle) {
+        case 0:
+            break;
+        case 90:
+            image->rotate90();
+            break;
+        case 180:
+            image->rotate180();
+            break;
+        case 270:
+            image->rotate180();
+            image->rotate90();
+            break;
+    }
 }
 
 

@@ -38,7 +38,11 @@ public:
     int storeRawData(JSAMPROW row, int stride, int pixelIndex);
 
     RawData getRawData();
+    void setRawData(int *data, int w, int h);
+
     void setPixels(int* target);
+    void rotate90();
+    void rotate180();
 };
 
 

@@ -8,6 +8,7 @@
 #include "Errors.h"
 #include "LogHelper.h"
 #include "cstring"
+#include "cmath"
 
 #define NUM_COLORS 3
 
@@ -191,4 +192,72 @@ void JPEGImage::setPixels(int *target) {
         RawData data = getRawData();
         memcpy(target, data.rawData, data.size * sizeof(int));
     }
+}
+
+void printTable(int *data, int w, int h) {
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            int si = (y * w) + x;
+            printf("%d ", data[si]);
+        }
+        printf("\n");
+    }
+}
+
+#define ARRAY_INDEX(x, y, w) (x + (y * w))
+/*
+int *imageData = new int[12]{1, 2, 3,
+                             4, 5, 6};
+*/
+void JPEGImage::rotate90() {
+    ImageMetaData metaData = getMetaData();
+    int w = mMetaData.imageWidth;
+    int h = mMetaData.imageHeight;
+    int n = w * h;
+    int is, it;
+
+    int *temp = new int[n];//TODO: is there a way to make transpose any matrix without help array. ?
+    //transpose
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            is = ARRAY_INDEX(x, y, w);
+            it = ARRAY_INDEX(y, x, h);
+            temp[it] = mRawData[is];
+        }
+    }
+    h = metaData.imageWidth;
+    w = metaData.imageHeight;
+    //h-flip
+    for (int y = 0; y < h; y++) {
+        for (int x = 0, l = w - 1; x < l; x++, l--) {
+            is = ARRAY_INDEX(x, y, w);
+            it = ARRAY_INDEX(l, y, w);
+            swap(temp[is], temp[it]);
+        }
+    }
+    memcpy(mRawData, temp, n * sizeof(int));
+    delete[] temp;
+    mMetaData.imageWidth = w;
+    mMetaData.imageHeight = h;
+}
+
+void JPEGImage::rotate180() {
+    ImageMetaData metaData = getMetaData();
+    int w = metaData.imageWidth;
+    int h = metaData.imageHeight;
+    const int len = w * h;
+    int p;
+    for (int i = 0, z = len - 1; i < z; i++, z--) {
+        p = mRawData[i];
+        mRawData[i] = mRawData[z];
+        mRawData[z] = p;
+    }
+}
+
+void JPEGImage::setRawData(int *data, int w, int h) {
+    releaseRawData();
+    mRawData = data;
+    mMetaData.imageWidth = w;
+    mMetaData.imageHeight = h;
+    mMetaData.componentSize = 4;
 }

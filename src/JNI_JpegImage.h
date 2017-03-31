@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1dispose
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
         (JNIEnv *, jobject, jobject);
 
+/*
+ * Class:     com_scurab_andriod_nativeimage_JPEGImage
+ * Method:    _rotate
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1rotate
+        (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

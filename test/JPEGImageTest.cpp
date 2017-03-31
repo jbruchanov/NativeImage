@@ -84,3 +84,74 @@ TEST(JPEGImage, SetPixels) {
     ASSERT_EQ(ptr[1], data[1]);
     ASSERT_EQ(ptr[2], data[2]);
 }
+
+TEST(JPEGImage, Rotate180) {
+    JPEGImage image;
+    int *imageData = new int[12]{1, 2, 3, 4,
+                                 5, 6, 7, 8,
+                                 9, 10, 11, 12};
+
+    int imageDataExpected[] = {12, 11, 10, 9,
+                               8, 7, 6, 5,
+                               4, 3, 2, 1};
+
+    image.setRawData(imageData, 4, 3);
+    image.rotate180();
+
+    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(JPEGImage, Rotate90_1) {
+    JPEGImage image;
+    int *imageData = new int[4]{1, 2, 3, 4};
+
+    int imageDataExpected[] = {1,
+                               2,
+                               3,
+                               4};
+
+    image.setRawData(imageData, 4, 1);
+    image.rotate90();
+
+    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(JPEGImage, Rotate90_2) {
+    JPEGImage image;
+    int *imageData = new int[6]{1, 2, 3,
+                                4, 5, 6};
+
+    int imageDataExpected[] = {4, 1,
+                               5, 2,
+                               6, 3};
+
+    image.setRawData(imageData, 3, 2);
+    image.rotate90();
+
+    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(JPEGImage, Rotate90_3) {
+    JPEGImage image;
+    int *imageData = new int[12]{1, 2, 3, 4,
+                                 5, 6, 7, 8,
+                                 9, 10, 11, 12};
+
+    int imageDataExpected[] = {9, 5, 1,
+                               10, 6, 2,
+                               11, 7, 3,
+                               12, 8, 4};
+
+    image.setRawData(imageData, 4, 3);
+    image.rotate90();
+
+    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
