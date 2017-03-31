@@ -136,7 +136,7 @@ int JPEGImage::loadImage(const char *path) {
              */
             (void) jpeg_read_scanlines(&cinfo, buffer, 1);
             /* Assume put_scanline_someplace wants a pointer and sample count. */
-            index += storeRawData(buffer[0], row_stride, index);
+            index = storeRawData(buffer[0], row_stride, index);
         }
 
         /* Step 7: Finish decompression */
