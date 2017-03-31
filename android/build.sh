@@ -21,5 +21,7 @@ cd -
 rm -R $JNI 2> /dev/null 
 
 rm -R /media/sf_Shared/libs
-mkdir /media/sf_Shared/libs
+rm -R /media/sf_Shared/obj
+# mkdir /media/sf_Shared/libs
 cp -a ./libs /media/sf_Shared
+cp -a ./obj /media/sf_Shared

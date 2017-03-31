@@ -3,7 +3,7 @@ project(NativeImageLib)
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB SOURCE_FILES *.cpp)
+file(GLOB_RECURSE SOURCE_FILES *.[h|c]*)
 
 find_package(JNI)
 
@@ -13,5 +13,5 @@ else()
     message(ERROR missing JNI)
 endif()
 
-add_library(NativeImageLib STATIC ${SOURCE_FILES} JNI_JpegImage.h JPEGImage.cpp JPEGImage.hpp Errors.h LogHelper.h ImageMetaData.h fakers/AndroidBitmap.h)
+add_library(NativeImageLib STATIC ${SOURCE_FILES})
 target_link_libraries(NativeImageLib jpeg json11)
