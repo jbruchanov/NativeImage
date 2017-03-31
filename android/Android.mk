@@ -13,23 +13,17 @@
 # limitations under the License.
 #
 LOCAL_PATH := $(call my-dir)
-
-CRYSTAX_LIBJPEG_PATH = $(ANDROID_NDK)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := jpeg
-LOCAL_SRC_FILES := ../libjpeg/libs/$(TARGET_ARCH_ABI)/libjpeg.so
-include $(PREBUILT_SHARED_LIBRARY)
-
 include $(CLEAR_VARS)
 LOCAL_C_INCLUDES := ../libjpeg/include
 FILE_LIST := $(wildcard $(LOCAL_PATH)/../../src/*.cpp) $(wildcard $(LOCAL_PATH)/../../json11/*.cpp) 
 LOCAL_LDLIBS := -llog -ljnigraphics
 LOCAL_MODULE    := main
-LOCAL_SHARED_LIBRARIES := jpeg
-#LOCAL_SRC_FILES := main.cpp appjni.cpp json11.cpp
+LOCAL_SHARED_LIBRARIES := libjpeg_shared libturbojpeg_shared 
 LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%)
-# LOCAL_SRC_FILES := ../../src/JNI_JpegImage.cpp
 
 include $(BUILD_SHARED_LIBRARY)
 #include $(BUILD_STATIC_LIBRARY)
+
+#keep it after our source code
+LIB_JPEG_TURBO := $(ANDROID_NDK)/sources/libjpeg-turbo/1.4.2
+include $(LIB_JPEG_TURBO)/Android.mk
