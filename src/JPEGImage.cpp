@@ -136,7 +136,7 @@ int JPEGImage::loadImage(const char *path) {
              */
             (void) jpeg_read_scanlines(&cinfo, buffer, 1);
             /* Assume put_scanline_someplace wants a pointer and sample count. */
-            storeRawData(buffer[0], row_stride, cinfo.num_components, &index);
+            index += storeRawData(buffer[0], row_stride, index);
         }
 
         /* Step 7: Finish decompression */
@@ -167,15 +167,16 @@ int JPEGImage::loadImage(const char *path) {
     return result;
 }
 
-void JPEGImage::storeRawData(JSAMPROW row, int stride, int rawDataIndex, int *pInt) {
-    for (int i = 0; i < stride; i += NUM_COLORS) {
-        unsigned char a, b, c;
-        a = row[i + 0];
-        b = row[i + 1];
-        c = row[i + 2];
-        mRawData[*pInt] = 0xFF000000 | a << 0 | b << 8 | c << 16;
-        (*pInt)++;
+int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
+    unsigned char a, b, c;
+    int i = 0;
+    while (i < stride) {
+        a = row[i++];
+        b = row[i++];
+        c = row[i++];
+        mRawData[pixelIndex++] = 0xFF000000 | a << 0 | b << 8 | c << 16;
     }
+    return pixelIndex;
 }
 
 RawData JPEGImage::getRawData() {

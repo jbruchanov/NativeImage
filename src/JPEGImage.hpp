@@ -35,7 +35,7 @@ public:
     ImageMetaData getMetaData();
     string getAndClearLastError();
 
-    void storeRawData(JSAMPROW row, int stride, int rawDataIndex, int *pInt);
+    int storeRawData(JSAMPROW row, int stride, int pixelIndex);
 
     RawData getRawData();
     void setPixels(int* target);
