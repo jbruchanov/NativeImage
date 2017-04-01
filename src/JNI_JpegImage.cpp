@@ -29,7 +29,7 @@ JPEGImage* getObject(JNIEnv *env, jobject obj) {
     jmethodID methodId = env->GetMethodID(clazz, METHOD_GET_NATIVE_REF, "()J");//long getNativeRef()
     // Call the method on the object
     jlong ptr = env->CallLongMethod(obj, methodId);
-    return (JPEGImage*)ptr;
+    return reinterpret_cast<JPEGImage*>(ptr);
 }
 
 /*
