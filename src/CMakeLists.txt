@@ -14,4 +14,4 @@ else()
 endif()
 
 add_library(NativeImageLib STATIC ${SOURCE_FILES})
-target_link_libraries(NativeImageLib jpeg json11)
+target_link_libraries(NativeImageLib jpeg json11 png)

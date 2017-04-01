@@ -8,7 +8,7 @@ include_directories(
         ${GOOGLE_TEST_SOURCE}
         ${GOOGLE_TEST_SOURCE}/include)
 
-set(SOURCE_FILES sample/_sample.cpp JPEGImageTest.cpp)
+file(GLOB SOURCE_FILES *.[h|c]*)
 
 add_subdirectory(lib/googletest)
 
