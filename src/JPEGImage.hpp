@@ -32,6 +32,7 @@ public:
     ~JPEGImage();
 
     int loadImage(const char* path);
+    int saveImage(const char* path, int quality);
     ImageMetaData getMetaData();
     string getAndClearLastError();
 

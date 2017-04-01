@@ -11,6 +11,7 @@
 #define JPEG_1X1_PX TEST_ASSET("assets/red.jpg")
 #define JPEG_3X1_PX TEST_ASSET("assets/3pixels.jpg")
 #define JPEG_INVALID TEST_ASSET("assets/invalid.jpg")
+#define JPEG_SAMPLE_ASSET TEST_ASSET("assets/test.jpg")
 
 
 TEST(JPEGImage, LoadingImage) {
@@ -154,4 +155,19 @@ TEST(JPEGImage, Rotate90_3) {
     for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
+}
+
+TEST(JPEGImage, SaveImage) {
+    JPEGImage image;
+    string f = JPEG_SAMPLE_ASSET;
+    image.loadImage(f.c_str());
+    const char *path = "pokus.jpg";
+    image.saveImage(path, 85);
+    
+    JPEGImage image2;
+    image2.loadImage(path);
+    const ImageMetaData metaData = image.getMetaData();
+    ASSERT_EQ(image.getMetaData().imageWidth, metaData.imageWidth);
+    ASSERT_EQ(image.getMetaData().imageHeight, metaData.imageHeight);
+    remove(path);
 }

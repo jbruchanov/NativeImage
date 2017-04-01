@@ -167,6 +167,66 @@ int JPEGImage::loadImage(const char *path) {
     return result;
 }
 
+int JPEGImage::saveImage(const char *path, int quality) {
+    if (mRawData == nullptr) {
+        return NO_DATA;
+    }
+
+    //moreless copy&paste of example.c from libjpeg sourcecode
+    struct jpeg_compress_struct cinfo;
+    struct jpeg_error_mgr jerr;
+
+    FILE *outfile;
+    JSAMPROW row_pointer[1];    /* pointer to JSAMPLE row[s] */
+    int row_stride;        /* physical row width in image buffer */
+
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_create_compress(&cinfo);
+
+    if ((outfile = fopen(path, "wb")) == NULL) {
+        LOGE("can't open %s", path);
+        return CANT_OPEN_FILE;
+    }
+
+    jpeg_stdio_dest(&cinfo, outfile);
+
+    /* Step 3: set parameters for compression */
+
+    /* First we supply a description of the input image.
+     * Four fields of the cinfo struct must be filled in:
+     */
+    ImageMetaData metaData = getMetaData();
+    cinfo.image_width = (JDIMENSION) metaData.imageWidth;/* image width and height, in pixels */
+    cinfo.image_height = (JDIMENSION) metaData.imageHeight;
+    cinfo.input_components = 3;        /* # of color components per pixel */
+    cinfo.in_color_space = JCS_RGB;    /* colorspace of input image */
+
+
+    jpeg_set_defaults(&cinfo);
+    jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
+    jpeg_start_compress(&cinfo, TRUE);
+    row_stride = metaData.imageWidth * 3;    /* JSAMPLEs per row in image_buffer */
+
+    unsigned char tmp[row_stride];
+    int iPixel = 0;
+    while (cinfo.next_scanline < cinfo.image_height) {
+        //convert back our internal bitmap format to jpeg format
+        for (int i = 0; i < row_stride; i++) {
+            int px = mRawData[iPixel++];
+            tmp[i] = (unsigned char) (px);
+            tmp[++i] = (unsigned char) (px >> 8);
+            tmp[++i] = (unsigned char) (px >> 16);
+        }
+        row_pointer[0] = &tmp[0];
+        (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+    }
+
+    jpeg_finish_compress(&cinfo);
+    fclose(outfile);
+    jpeg_destroy_compress(&cinfo);
+    return NO_ERR;
+}
+
 int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
     unsigned char a, b, c;
     int i = 0;
@@ -178,6 +238,8 @@ int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
     }
     return pixelIndex;
 }
+
+
 
 RawData JPEGImage::getRawData() {
     RawData r;
