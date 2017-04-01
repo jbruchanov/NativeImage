@@ -7,42 +7,12 @@
 #include "JPEGImage.hpp"
 #include "Errors.h"
 #include "LogHelper.h"
-#include "cstring"
-
-#define ARRAY_INDEX(x, y, w) (x + (y * w))
 
 struct _Error {
     struct jpeg_error_mgr pub;    /* "public" fields */
     jmp_buf setjmp_buffer;    /* for return to caller */
 };
 typedef struct _Error *_ErrorPtr;
-
-ImageMetaData JPEGImage::getMetaData() {
-    return mMetaData;
-}
-
-JPEGImage::JPEGImage() {
-    mMetaData = {};
-    mRawData = 0;
-}
-
-JPEGImage::~JPEGImage() {
-    releaseRawData();
-}
-
-void JPEGImage::releaseRawData() {
-    if (mRawData != 0) {
-        delete[] mRawData;
-    }
-    mRawData = nullptr;
-}
-
-string JPEGImage::getAndClearLastError() {
-    string err = string(mLastError);
-    int len = sizeof(mLastError);
-    memset(mLastError, '\0', len);
-    return err;
-}
 
 int JPEGImage::loadImage(const char *path) {
     mMetaData = {};//clear metaData
@@ -100,10 +70,10 @@ int JPEGImage::loadImage(const char *path) {
     mMetaData.imageWidth = cinfo.image_width;
     mMetaData.imageHeight = cinfo.image_height;
     mMetaData.componentSize = cinfo.num_components;
-    try {
-        mRawData = new int[mMetaData.imageWidth * mMetaData.imageHeight];
-    } catch (...) {
-        result = OUT_OF_MEMORY;
+    mRawData = new (nothrow) int[mMetaData.imageWidth * mMetaData.imageHeight];
+    if (mRawData == 0) {
+        fclose(infile);
+        return OUT_OF_MEMORY;
     }
 
 
@@ -240,82 +210,3 @@ int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
 }
 
 
-
-RawData JPEGImage::getRawData() {
-    RawData r;
-    r.rawData = mRawData;
-    r.size = mMetaData.imageWidth * mMetaData.imageHeight;
-    return r;
-}
-
-void JPEGImage::setPixels(int *target) {
-    if (mRawData != NULL && target != NULL) {
-        RawData data = getRawData();
-        memcpy(target, data.rawData, data.size * sizeof(int));
-    }
-}
-
-void JPEGImage::rotate90() {
-    ImageMetaData metaData = getMetaData();
-    int w = mMetaData.imageWidth;
-    int h = mMetaData.imageHeight;
-    int is, it;
-
-    //http://softwareengineering.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
-    //transpose
-    unsigned int next = 0;
-    unsigned int i = 0;
-    for (unsigned int start = 0; start <= w * h - 1; ++start) {
-        next = start;
-        i = 0;
-        do {
-            ++i;
-            next = (next % h) * w + next / h;
-        } while (next > start);
-
-        if (next >= start && i != 1) {
-            const int tmp = mRawData[start];
-            next = start;
-            do {
-                i = (next % h) * w + next / h;
-                mRawData[next] = (i == start) ? tmp : mRawData[i];
-                next = i;
-            } while (next > start);
-        }
-    }
-
-    h = metaData.imageWidth;
-    w = metaData.imageHeight;
-
-    //h-flip
-    for (int y = 0; y < h; y++) {
-        for (int x = 0, l = w - 1; x < l; x++, l--) {
-            is = ARRAY_INDEX(x, y, w);
-            it = ARRAY_INDEX(l, y, w);
-            swap(mRawData[is], mRawData[it]);
-        }
-    }
-    mMetaData.imageWidth = w;
-    mMetaData.imageHeight = h;
-}
-
-void JPEGImage::rotate180() {
-    ImageMetaData metaData = getMetaData();
-    int w = metaData.imageWidth;
-    int h = metaData.imageHeight;
-    const int len = w * h;
-    int p;
-    for (int i = 0, z = len - 1; i < z; i++, z--) {
-        p = mRawData[i];
-        mRawData[i] = mRawData[z];
-        mRawData[z] = p;
-    }
-}
-
-void JPEGImage::setRawData(int *data, int w, int h) {
-    releaseRawData();
-    mRawData = data;
-    mMetaData.imageWidth = w;
-    mMetaData.imageHeight = h;
-    mMetaData.componentSize = 4;
-}
