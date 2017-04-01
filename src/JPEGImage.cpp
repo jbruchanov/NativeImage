@@ -8,9 +8,8 @@
 #include "Errors.h"
 #include "LogHelper.h"
 #include "cstring"
-#include "cmath"
 
-#define NUM_COLORS 3
+#define ARRAY_INDEX(x, y, w) (x + (y * w))
 
 struct _Error {
     struct jpeg_error_mgr pub;    /* "public" fields */
@@ -194,49 +193,46 @@ void JPEGImage::setPixels(int *target) {
     }
 }
 
-void printTable(int *data, int w, int h) {
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            int si = (y * w) + x;
-            printf("%d ", data[si]);
-        }
-        printf("\n");
-    }
-}
-
-#define ARRAY_INDEX(x, y, w) (x + (y * w))
-/*
-int *imageData = new int[12]{1, 2, 3,
-                             4, 5, 6};
-*/
 void JPEGImage::rotate90() {
     ImageMetaData metaData = getMetaData();
     int w = mMetaData.imageWidth;
     int h = mMetaData.imageHeight;
-    int n = w * h;
     int is, it;
 
-    int *temp = new int[n];//TODO: is there a way to make transpose any matrix without help array. ?
+    //http://softwareengineering.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
     //transpose
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            is = ARRAY_INDEX(x, y, w);
-            it = ARRAY_INDEX(y, x, h);
-            temp[it] = mRawData[is];
+    unsigned int next = 0;
+    unsigned int i = 0;
+    for (unsigned int start = 0; start <= w * h - 1; ++start) {
+        next = start;
+        i = 0;
+        do {
+            ++i;
+            next = (next % h) * w + next / h;
+        } while (next > start);
+
+        if (next >= start && i != 1) {
+            const int tmp = mRawData[start];
+            next = start;
+            do {
+                i = (next % h) * w + next / h;
+                mRawData[next] = (i == start) ? tmp : mRawData[i];
+                next = i;
+            } while (next > start);
         }
     }
+
     h = metaData.imageWidth;
     w = metaData.imageHeight;
+
     //h-flip
     for (int y = 0; y < h; y++) {
         for (int x = 0, l = w - 1; x < l; x++, l--) {
             is = ARRAY_INDEX(x, y, w);
             it = ARRAY_INDEX(l, y, w);
-            swap(temp[is], temp[it]);
+            swap(mRawData[is], mRawData[it]);
         }
     }
-    memcpy(mRawData, temp, n * sizeof(int));
-    delete[] temp;
     mMetaData.imageWidth = w;
     mMetaData.imageHeight = h;
 }
