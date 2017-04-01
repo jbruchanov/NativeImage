@@ -6,8 +6,8 @@
 #include "../src/JPEGImage.hpp"
 #include "../src/Errors.h"
 #include "jerror.h"
+#include "TestHelper.h"
 
-#define TEST_ASSET(filepath) "../test/" filepath
 #define JPEG_1X1_PX TEST_ASSET("assets/red.jpg")
 #define JPEG_3X1_PX TEST_ASSET("assets/3pixels.jpg")
 #define JPEG_INVALID TEST_ASSET("assets/invalid.jpg")
