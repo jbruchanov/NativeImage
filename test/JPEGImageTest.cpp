@@ -16,14 +16,14 @@
 
 TEST(JPEGImage, LoadingImage) {
     string file = JPEG_1X1_PX;
-    JPEGImage image;
+    JPEGImage image(4);
     int v = image.loadImage(file.c_str());
     ASSERT_EQ(NO_ERR, v);
 }
 
 TEST(JPEGImage, MetaDataImageSize) {
     string f = JPEG_3X1_PX;
-    JPEGImage image;
+    JPEGImage image(4);
     image.loadImage(f.c_str());
     ImageMetaData data = image.getMetaData();
     ASSERT_EQ(1, data.imageHeight);
@@ -32,7 +32,7 @@ TEST(JPEGImage, MetaDataImageSize) {
 
 TEST(JPEGImage, LoadInvalidImage) {
     string f = JPEG_INVALID;
-    JPEGImage image;
+    JPEGImage image(4);
     int result = image.loadImage(f.c_str());
     ASSERT_EQ(JERR_NO_SOI, result);
     string err = image.getAndClearLastError();
@@ -42,11 +42,11 @@ TEST(JPEGImage, LoadInvalidImage) {
 
 TEST(JPEGImage, LoadRawData) {
     string f = JPEG_3X1_PX;
-    JPEGImage image;
+    JPEGImage image(4);
     image.loadImage(f.c_str());
     RawData raw = image.getRawData();
-    int *ptr = raw.rawData;
-    ASSERT_EQ(3, raw.size);
+    int *ptr = (int *) raw.rawData;
+    ASSERT_EQ(3, raw.metaData.pixelCount());
     int p1 = ptr[0];
     int p2 = ptr[1];
     int p3 = ptr[2];
@@ -62,32 +62,32 @@ TEST(JPEGImage, LoadRawData) {
 
 TEST(JPEGImage, FreesMemoryOnNewLoad) {
     string f = JPEG_3X1_PX;
-    JPEGImage image;
+    JPEGImage image(4);
     image.loadImage(f.c_str());
     f = JPEG_INVALID;
     image.loadImage(f.c_str());
     RawData data = image.getRawData();
     ASSERT_EQ(nullptr, data.rawData);
-    ASSERT_EQ(0, data.size);
+    ASSERT_EQ(0, data.metaData.pixelCount());
 }
 
 TEST(JPEGImage, SetPixels) {
     string f = JPEG_3X1_PX;
-    JPEGImage image;
+    JPEGImage image(4);
     image.loadImage(f.c_str());
     int data[3];
     int size = sizeof(data);
     memset(&data, 0, size);
     image.setPixels(&data[0]);
 
-    int *ptr = image.getRawData().rawData;
+    int *ptr = (int *) image.getRawData().rawData;
     ASSERT_EQ(ptr[0], data[0]);
     ASSERT_EQ(ptr[1], data[1]);
     ASSERT_EQ(ptr[2], data[2]);
 }
 
 TEST(JPEGImage, Rotate180) {
-    JPEGImage image;
+    JPEGImage image(4);
     int *imageData = new int[12]{1, 2, 3, 4,
                                  5, 6, 7, 8,
                                  9, 10, 11, 12};
@@ -96,7 +96,7 @@ TEST(JPEGImage, Rotate180) {
                                8, 7, 6, 5,
                                4, 3, 2, 1};
 
-    image.setRawData(imageData, 4, 3);
+    image.setRawData(imageData, 4, 3, 4);
     image.rotate180();
 
     for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
@@ -105,7 +105,7 @@ TEST(JPEGImage, Rotate180) {
 }
 
 TEST(JPEGImage, Rotate90_1) {
-    JPEGImage image;
+    JPEGImage image(4);
     int *imageData = new int[4]{1, 2, 3, 4};
 
     int imageDataExpected[] = {1,
@@ -113,7 +113,7 @@ TEST(JPEGImage, Rotate90_1) {
                                3,
                                4};
 
-    image.setRawData(imageData, 4, 1);
+    image.setRawData(imageData, 4, 1, 4);
     image.rotate90();
 
     for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
@@ -122,7 +122,7 @@ TEST(JPEGImage, Rotate90_1) {
 }
 
 TEST(JPEGImage, Rotate90_2) {
-    JPEGImage image;
+    JPEGImage image(4);
     int *imageData = new int[6]{1, 2, 3,
                                 4, 5, 6};
 
@@ -130,7 +130,7 @@ TEST(JPEGImage, Rotate90_2) {
                                5, 2,
                                6, 3};
 
-    image.setRawData(imageData, 3, 2);
+    image.setRawData(imageData, 3, 2, 4);
     image.rotate90();
 
     for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
@@ -139,7 +139,7 @@ TEST(JPEGImage, Rotate90_2) {
 }
 
 TEST(JPEGImage, Rotate90_3) {
-    JPEGImage image;
+    JPEGImage image(4);
     int *imageData = new int[12]{1, 2, 3, 4,
                                  5, 6, 7, 8,
                                  9, 10, 11, 12};
@@ -149,7 +149,7 @@ TEST(JPEGImage, Rotate90_3) {
                                11, 7, 3,
                                12, 8, 4};
 
-    image.setRawData(imageData, 4, 3);
+    image.setRawData(imageData, 4, 3, 4);
     image.rotate90();
 
     for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
@@ -158,13 +158,13 @@ TEST(JPEGImage, Rotate90_3) {
 }
 
 TEST(JPEGImage, SaveImage) {
-    JPEGImage image;
+    JPEGImage image(4);
     string f = JPEG_SAMPLE_ASSET;
     image.loadImage(f.c_str());
     const char *path = "pokus.jpg";
     image.saveImage(path, 85);
     
-    JPEGImage image2;
+    JPEGImage image2(4);
     image2.loadImage(path);
     const ImageMetaData metaData = image.getMetaData();
     ASSERT_EQ(image.getMetaData().imageWidth, metaData.imageWidth);

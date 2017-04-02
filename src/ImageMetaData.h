@@ -6,12 +6,13 @@
 #define NATIVEIMAGEAPP_IMAGEMETADATA_H
 
 struct ImageMetaData {
+public:
     int imageWidth;
     int imageHeight;
+    int componentsPerPixel;
     int componentSize;
 
-public:
-    int pixelSize() { return imageWidth * imageHeight; }
+    int pixelCount() { return imageWidth * imageHeight; }
 };
 
 #endif //NATIVEIMAGEAPP_IMAGEMETADATA_H

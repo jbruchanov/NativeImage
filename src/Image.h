@@ -14,8 +14,8 @@
 using namespace std;
 
 struct RawData {
-    int* rawData;
-    int size;
+    void* rawData;
+    ImageMetaData metaData;
 };
 
 class Image {
@@ -23,11 +23,12 @@ class Image {
 protected:
     ImageMetaData mMetaData;
     char mLastError[200];
-    int *mRawData;
+    void *mRawData;
     void releaseRawData();
+    void clearMetaData();
 
 public:
-    Image();
+    Image(int componentsPerPixel);
     virtual ~Image();
 
     virtual int loadImage(const char* path) = 0;
@@ -36,7 +37,9 @@ public:
     string getAndClearLastError();
 
     RawData getRawData();
-    void setRawData(int *data, int w, int h);
+    void setRawData(void *data, int w, int h, int componentsPerPixel);
+    void swap(int src, int dst);
+    void copy(int src, int dst);
 
     void setPixels(int* target);
     void rotate90();

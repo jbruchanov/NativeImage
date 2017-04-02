@@ -43,7 +43,7 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
     jmethodID methodId = env->GetMethodID(clazz, METHOD_SET_NATIVE_REF, "(J)V");//void onSetNativeRef(long ref)
     // Call the method on the object
 
-    JPEGImage *image = new JPEGImage();
+    JPEGImage *image = new JPEGImage(4);
     LOGD("JPEGImagePointer:%ld", (long)image);
     env->CallVoidMethod(obj, methodId, (jlong)image);
 }
@@ -128,7 +128,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
 
     JPEGImage *image = getObject(env, obj);
     ImageMetaData metaData = image->getMetaData();
-    if (metaData.pixelSize() != (info.height * info.width)) {
+    if (metaData.pixelCount() != (info.height * info.width)) {
         LOGE("Invalid resolution loadedImage:%dx%d vs bitmap:%dx%d", metaData.imageWidth, metaData.imageHeight, info.width, info.height);
         return NOT_SAME_RESOLUTION;
     }

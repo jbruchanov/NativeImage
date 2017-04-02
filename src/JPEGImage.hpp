@@ -13,8 +13,7 @@
 class JPEGImage : public Image {
 
 public:
-//    JPEGImage();
-//    ~JPEGImage();
+    JPEGImage(int componentsPerPixel);
 
     int loadImage(const char* path);
     int saveImage(const char* path, int quality);
