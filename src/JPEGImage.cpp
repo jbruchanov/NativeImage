@@ -14,6 +14,7 @@ struct _Error {
     struct jpeg_error_mgr pub;    /* "public" fields */
     jmp_buf setjmp_buffer;    /* for return to caller */
 };
+
 typedef struct _Error *_ErrorPtr;
 
 JPEGImage::JPEGImage(int componentsPerPixel) : Image(componentsPerPixel) {
@@ -76,18 +77,11 @@ int JPEGImage::loadImage(const char *path) {
     mMetaData.imageWidth = cinfo.image_width;
     mMetaData.imageHeight = cinfo.image_height;
     mMetaData.componentSize = cinfo.num_components;
-    mRawData = malloc(mMetaData.imageWidth * mMetaData.imageHeight * mMetaData.componentsPerPixel);
-//    mRawData = new (nothrow) int[mMetaData.imageWidth * mMetaData.imageHeight];
+    mRawData = malloc((size_t) (mMetaData.imageWidth * mMetaData.imageHeight * mMetaData.componentsPerPixel));
     if (mRawData == 0) {
         fclose(infile);
         return OUT_OF_MEMORY;
     }
-
-//    if (!checkSaveMemoryLimit()) {
-//        fclose(infile);
-//        return OUT_OF_MEMORY;
-//    }
-
 
     /* Step 4: set parameters for decompression */
 
@@ -187,13 +181,13 @@ int JPEGImage::saveImage(const char *path, int quality) {
     jpeg_set_defaults(&cinfo);
     jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
     jpeg_start_compress(&cinfo, TRUE);
-    row_stride = metaData.imageWidth * 3;    /* JSAMPLEs per row in image_buffer */
+    row_stride = metaData.imageWidth * RGB;    /* JSAMPLEs per row in image_buffer */
 
-    unsigned char tmp[mMetaData.componentsPerPixel == 4 ? row_stride : 0];//just keep it empty it if we have non 1
+    unsigned char tmp[mMetaData.componentsPerPixel == RGBA ? row_stride : 0];//just keep it empty it if we have non 1
     int iPixel = 0;
     while (cinfo.next_scanline < cinfo.image_height) {
         //convert back our internal bitmap format to jpeg format
-        if (mMetaData.componentsPerPixel == 4) {
+        if (mMetaData.componentsPerPixel == RGBA) {
             for (int i = 0; i < row_stride; i++) {
                 int px = ((int *) mRawData)[iPixel++];
                 tmp[i] = (unsigned char) (px);
@@ -201,9 +195,8 @@ int JPEGImage::saveImage(const char *path, int quality) {
                 tmp[++i] = (unsigned char) (px >> 16);
             }
             row_pointer[0] = &tmp[0];
-        } else if (mMetaData.componentsPerPixel == 3) {
-            row_pointer[0] = (JSAMPROW) &((unsigned char *) mRawData)[iPixel];
-            iPixel += row_stride / mMetaData.componentsPerPixel;
+        } else if (mMetaData.componentsPerPixel == RGB) {
+            row_pointer[0] = ((unsigned char *) mRawData) + (cinfo.next_scanline * mMetaData.imageWidth * mMetaData.componentsPerPixel);
         }
         (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
@@ -215,7 +208,7 @@ int JPEGImage::saveImage(const char *path, int quality) {
 }
 
 int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
-    if (mMetaData.componentsPerPixel == 4) {
+    if (mMetaData.componentsPerPixel == RGBA) {
         unsigned char a, b, c;
         int i = 0;
         while (i < stride) {
@@ -224,9 +217,10 @@ int JPEGImage::storeRawData(JSAMPROW row, int stride, int pixelIndex) {
             c = row[i++];
             ((int *) mRawData)[pixelIndex++] = 0xFF000000 | a << 0 | b << 8 | c << 16;
         }
-    } else if (mMetaData.componentsPerPixel == 3) {
+    } else if (mMetaData.componentsPerPixel == RGB) {
         void *start = mRawData + (pixelIndex * mMetaData.componentsPerPixel * sizeof(unsigned char));
         memcpy(start, row, stride);
+        pixelIndex += stride / mMetaData.componentsPerPixel;
     }
     return pixelIndex;
 }

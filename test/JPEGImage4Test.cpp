@@ -14,14 +14,14 @@
 #define JPEG_SAMPLE_ASSET TEST_ASSET("assets/test.jpg")
 
 
-TEST(JPEGImage, LoadingImage) {
+TEST(JPEGImage4, LoadingImage) {
     string file = JPEG_1X1_PX;
     JPEGImage image(4);
     int v = image.loadImage(file.c_str());
     ASSERT_EQ(NO_ERR, v);
 }
 
-TEST(JPEGImage, MetaDataImageSize) {
+TEST(JPEGImage4, MetaDataImageSize) {
     string f = JPEG_3X1_PX;
     JPEGImage image(4);
     image.loadImage(f.c_str());
@@ -30,7 +30,7 @@ TEST(JPEGImage, MetaDataImageSize) {
     ASSERT_EQ(3, data.imageWidth);
 }
 
-TEST(JPEGImage, LoadInvalidImage) {
+TEST(JPEGImage4, LoadInvalidImage) {
     string f = JPEG_INVALID;
     JPEGImage image(4);
     int result = image.loadImage(f.c_str());
@@ -40,7 +40,7 @@ TEST(JPEGImage, LoadInvalidImage) {
     ASSERT_EQ(0, err2.length());
 }
 
-TEST(JPEGImage, LoadRawData) {
+TEST(JPEGImage4, LoadRawData) {
     string f = JPEG_3X1_PX;
     JPEGImage image(4);
     image.loadImage(f.c_str());
@@ -60,7 +60,7 @@ TEST(JPEGImage, LoadRawData) {
     ASSERT_EQ(0xFF000000, c3);
 }
 
-TEST(JPEGImage, FreesMemoryOnNewLoad) {
+TEST(JPEGImage4, FreesMemoryOnNewLoad) {
     string f = JPEG_3X1_PX;
     JPEGImage image(4);
     image.loadImage(f.c_str());
@@ -71,14 +71,14 @@ TEST(JPEGImage, FreesMemoryOnNewLoad) {
     ASSERT_EQ(0, data.metaData.pixelCount());
 }
 
-TEST(JPEGImage, SetPixels) {
+TEST(JPEGImage4, SetPixels) {
     string f = JPEG_3X1_PX;
     JPEGImage image(4);
     image.loadImage(f.c_str());
     int data[3];
     int size = sizeof(data);
     memset(&data, 0, size);
-    image.setPixels(&data[0]);
+    image.setPixels(&data[0], 4);
 
     int *ptr = (int *) image.getRawData().rawData;
     ASSERT_EQ(ptr[0], data[0]);
@@ -86,7 +86,7 @@ TEST(JPEGImage, SetPixels) {
     ASSERT_EQ(ptr[2], data[2]);
 }
 
-TEST(JPEGImage, Rotate180) {
+TEST(JPEGImage4, Rotate180) {
     JPEGImage image(4);
     int *imageData = new int[12]{1, 2, 3, 4,
                                  5, 6, 7, 8,
@@ -104,7 +104,7 @@ TEST(JPEGImage, Rotate180) {
     }
 }
 
-TEST(JPEGImage, Rotate90_1) {
+TEST(JPEGImage4, Rotate90_1) {
     JPEGImage image(4);
     int *imageData = new int[4]{1, 2, 3, 4};
 
@@ -121,7 +121,7 @@ TEST(JPEGImage, Rotate90_1) {
     }
 }
 
-TEST(JPEGImage, Rotate90_2) {
+TEST(JPEGImage4, Rotate90_2) {
     JPEGImage image(4);
     int *imageData = new int[6]{1, 2, 3,
                                 4, 5, 6};
@@ -138,7 +138,7 @@ TEST(JPEGImage, Rotate90_2) {
     }
 }
 
-TEST(JPEGImage, Rotate90_3) {
+TEST(JPEGImage4, Rotate90_3) {
     JPEGImage image(4);
     int *imageData = new int[12]{1, 2, 3, 4,
                                  5, 6, 7, 8,
@@ -157,11 +157,11 @@ TEST(JPEGImage, Rotate90_3) {
     }
 }
 
-TEST(JPEGImage, SaveImage) {
+TEST(JPEGImage4, SaveImage) {
     JPEGImage image(4);
     string f = JPEG_SAMPLE_ASSET;
     image.loadImage(f.c_str());
-    const char *path = "pokus.jpg";
+    const char *path = "pokus4.jpg";
     image.saveImage(path, 85);
     
     JPEGImage image2(4);

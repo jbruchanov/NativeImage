@@ -7,7 +7,8 @@
 
 #define BITMAP_COLOR(color) ((0xFF00FF00 & color) | (0x00FF0000 & color) >> 16  | (0x000000FF & color) << 16)
 #define ARRAY_INDEX(x, y, w) (x + (y * w))
-
+#define RGB 3
+#define RGBA 4
 #include <string>
 #include "ImageMetaData.h"
 
@@ -41,7 +42,7 @@ public:
     void swap(int src, int dst);
     void copy(int src, int dst);
 
-    void setPixels(int* target);
+    void setPixels(int* target, int targetComponentsPerPixel);
     void rotate90();
     void rotate180();
 };

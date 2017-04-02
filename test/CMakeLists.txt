@@ -18,6 +18,6 @@ foreach(file ${TEST_ASSETS})
 endforeach()
 
 
-add_executable(NativeImageTest ${SOURCE_FILES})
+add_executable(NativeImageTest ${SOURCE_FILES} sample/_sample.cpp)
 
 target_link_libraries(NativeImageTest NativeImageLib gtest gtest_main)

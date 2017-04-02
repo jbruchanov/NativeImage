@@ -144,7 +144,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
         return v;
     }
 
-    image->setPixels(ptr);
+    image->setPixels(ptr, 4);
 
     v = AndroidBitmap_unlockPixels(env, bitmap);
     if(v != ANDROID_BITMAP_RESULT_SUCCESS) {
