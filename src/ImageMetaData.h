@@ -9,7 +9,6 @@ struct ImageMetaData {
 public:
     int imageWidth;
     int imageHeight;
-//    int componentsPerPixel;
     int componentSize;
 
     int pixelCount() { return imageWidth * imageHeight; }
