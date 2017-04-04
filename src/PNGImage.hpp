@@ -3,7 +3,7 @@
 //
 
 
-#include "Image.h"
+#include "Image.hpp"
 
 #ifndef NATIVEIMAGEAPP_PNGIMAGE_H
 #define NATIVEIMAGEAPP_PNGIMAGE_H
@@ -11,6 +11,8 @@
 
 class PNGImage : public Image {
 public:
+    PNGImage(int componentsPerPixel);
+
     int loadImage(const char* path);
     int saveImage(const char* path, int quality);
 

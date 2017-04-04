@@ -9,31 +9,31 @@
 #define ARRAY_INDEX(x, y, w) (x + (y * w))
 #define RGB 3
 #define RGBA 4
+
 #include <string>
 #include "ImageMetaData.h"
-
-using namespace std;
-
-struct RawData {
-    void* rawData;
-    ImageMetaData metaData;
-};
+#include "ImageProcessor.h"
 
 class Image {
 
 protected:
     ImageMetaData mMetaData;
     char mLastError[200];
-    void *mRawData;
+    void *mImageData;
     void releaseRawData();
     void clearMetaData();
+    int mComponentsPerPixel;
 
 public:
     Image(int componentsPerPixel);
     virtual ~Image();
 
-    virtual int loadImage(const char* path) = 0;
-    virtual int saveImage(const char* path, int quality) = 0;
+//    virtual int loadImage(const char* path) = 0;
+//    virtual int saveImage(const char* path, int quality) = 0;
+
+    IOResult loadImage(ImageProcessor &processor, const char *path);
+    int saveImage(ImageProcessor &processor, const char *path);
+
     ImageMetaData getMetaData();
     string getAndClearLastError();
 

@@ -7,6 +7,8 @@
 #include "Errors.h"
 #include <png.h>
 
+PNGImage::PNGImage(int componentsPerPixel) : Image(componentsPerPixel) {}
+
 int PNGImage::loadImage(const char *path) {
     png_byte header[8];    // 8 is the maximum size that can be checked
     int x, y;

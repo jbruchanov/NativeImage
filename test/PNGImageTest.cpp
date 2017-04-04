@@ -16,7 +16,7 @@
 
 TEST(PNGImage, LoadingImage) {
     string file = PNG_1X1_PX;
-    PNGImage image;
+    PNGImage image(4);
     int v = image.loadImage(file.c_str());
     ASSERT_EQ(NO_ERR, v);
 }

@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
-        (JNIEnv *, jobject);
+        (JNIEnv *, jobject, jint);
 
 /*
  * Class:     com_scurab_andriod_nativeimage_JPEGImage

@@ -11,10 +11,11 @@
 
 #include "JNI_JpegImage.h"
 #include "../json11/json11.hpp"
-#include "JPEGImage.hpp"
+#include "Image.hpp"
 #include "LogHelper.h"
 #include "Errors.h"
 #include "JNIHelper.h"
+#include "JpegImageProcessor.h"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/JPEGImage"
 #define METHOD_SET_NATIVE_REF "onSetNativeRef"
@@ -24,12 +25,12 @@
 using namespace json11;
 using namespace std;
 
-JPEGImage* getObject(JNIEnv *env, jobject obj) {
+Image* getObject(JNIEnv *env, jobject obj) {
     jclass clazz = env->FindClass(CLASS_NAME);
     jmethodID methodId = env->GetMethodID(clazz, METHOD_GET_NATIVE_REF, "()J");//long getNativeRef()
     // Call the method on the object
     jlong ptr = env->CallLongMethod(obj, methodId);
-    return reinterpret_cast<JPEGImage*>(ptr);
+    return reinterpret_cast<Image*>(ptr);
 }
 
 /*
@@ -38,12 +39,12 @@ JPEGImage* getObject(JNIEnv *env, jobject obj) {
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
-        (JNIEnv *env, jobject obj) {
+        (JNIEnv *env, jobject obj, jint componentsPerPixel) {
     jclass clazz = env->FindClass(CLASS_NAME);
     jmethodID methodId = env->GetMethodID(clazz, METHOD_SET_NATIVE_REF, "(J)V");//void onSetNativeRef(long ref)
     // Call the method on the object
 
-    JPEGImage *image = new JPEGImage(4);
+    Image *image = new Image(componentsPerPixel);
     LOGD("JPEGImagePointer:%ld", (long)image);
     env->CallVoidMethod(obj, methodId, (jlong)image);
 }
@@ -57,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
 (JNIEnv *env, jobject obj, jstring jpath) {
     int result = JNI_ERR;
     try {
-        JPEGImage *image = getObject(env, obj);
+        Image *image = getObject(env, obj);
         const char *path = env->GetStringUTFChars(jpath, 0);
         FILE *infile;
         if ((infile = fopen(path, "rb")) == NULL) {
@@ -67,9 +68,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
             fclose(infile);
         }
 
-        result = image->loadImage(path);
-        LOGD("LoadedResult:%d", result);
-        if (OUT_OF_MEMORY == result) {
+        JpegImageProcessor prc;
+
+        IOResult ior = image->loadImage(prc, path);
+        LOGD("LoadedResult:%d", ior.result);
+        if (OUT_OF_MEMORY == ior.result) {
             string errMsg = string("Unable to load:'") + path + "'";
             result = throwOutOfMemoryError(env, errMsg.c_str());
         }
@@ -87,7 +90,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
  */
 JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMetaData
         (JNIEnv *env, jobject obj) {
-    JPEGImage *image = getObject(env, obj);
+    Image *image = getObject(env, obj);
     const ImageMetaData metaData = image->getMetaData();
 
     Json result = Json::object {
@@ -106,7 +109,7 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMet
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1dispose
 (JNIEnv *env, jobject obj) {
-    JPEGImage *image = getObject(env, obj);
+    Image *image = getObject(env, obj);
     LOGD("JPEGImagePointer:%ld", (long)image);
     delete image;
 }
@@ -126,7 +129,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
         return v;
     }
 
-    JPEGImage *image = getObject(env, obj);
+    Image *image = getObject(env, obj);
     ImageMetaData metaData = image->getMetaData();
     if (metaData.pixelCount() != (info.height * info.width)) {
         LOGE("Invalid resolution loadedImage:%dx%d vs bitmap:%dx%d", metaData.imageWidth, metaData.imageHeight, info.width, info.height);
@@ -161,7 +164,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1rotate
         (JNIEnv *env, jobject obj, jint angle) {
-    JPEGImage *image = getObject(env, obj);
+    Image *image = getObject(env, obj);
     switch ((int) angle) {
         case 0:
             break;
