@@ -10,6 +10,8 @@
 #include "../src/JpegImageProcessor.h"
 #include "Assets.h"
 
+typedef unsigned char *string1;
+typedef string1 string2;
 static JpegImageProcessor prc;
 
 TEST(ImageJPEG4, LoadingImage) {
@@ -76,7 +78,7 @@ TEST(ImageJPEG4, SetPixels) {
     int data[3];
     int size = sizeof(data);
     memset(&data, 0, size);
-    image.setPixels(&data[0], 4);
+    image.setPixels(data, 4);
 
     int *ptr = (int *) image.getRawData().data;
     ASSERT_EQ(ptr[0], data[0]);
@@ -86,71 +88,73 @@ TEST(ImageJPEG4, SetPixels) {
 
 TEST(ImageJPEG4, Rotate180) {
     Image image(4);
-    int *imageData = new int[12]{1, 2, 3, 4,
-                                 5, 6, 7, 8,
-                                 9, 10, 11, 12};
+    string2 imageData = new unsigned char[48]
+            {11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
+             51, 52, 53, 54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84,
+             91, 92, 93, 94, 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124};
 
-    int imageDataExpected[] = {12, 11, 10, 9,
-                               8, 7, 6, 5,
-                               4, 3, 2, 1};
+    unsigned char imageDataExpected[] = {121, 122, 123, 124, 111, 112, 113, 114, 101, 102, 103, 104, 91, 92, 93, 94,
+                                         81, 82, 83, 84, 71, 72, 73, 74, 61, 62, 63, 64, 51, 52, 53, 54,
+                                         41, 42, 43, 44, 31, 32, 33, 34, 21, 22, 23, 24, 11, 12, 13, 14};
 
     image.setRawData(imageData, 4, 3, 4);
     image.rotate180();
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_1) {
     Image image(4);
-    int *imageData = new int[4]{1, 2, 3, 4};
+    unsigned char *imageData = new unsigned char[16]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44};
 
-    int imageDataExpected[] = {1,
-                               2,
-                               3,
-                               4};
+    unsigned char imageDataExpected[] = {11, 12, 13, 14,
+                                         21, 22, 23, 24,
+                                         31, 32, 33, 34,
+                                         41, 42, 43, 44};
 
     image.setRawData(imageData, 4, 1, 4);
     image.rotate90();
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_2) {
     Image image(4);
-    int *imageData = new int[6]{1, 2, 3,
-                                4, 5, 6};
+    unsigned char *imageData = new unsigned char[24]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34,
+                                                     41, 42, 43, 44, 51, 52, 53, 54, 61, 62, 63, 64};
 
-    int imageDataExpected[] = {4, 1,
-                               5, 2,
-                               6, 3};
+    unsigned char imageDataExpected[] = {41, 42, 43, 44, 11, 12, 13, 14,
+                                         51, 52, 53, 54, 21, 22, 23, 24,
+                                         61, 62, 63, 64, 31, 32, 33, 34};
 
     image.setRawData(imageData, 3, 2, 4);
     image.rotate90();
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_3) {
     Image image(4);
-    int *imageData = new int[12]{1, 2, 3, 4,
-                                 5, 6, 7, 8,
-                                 9, 10, 11, 12};
+    unsigned char *imageData = new unsigned char[48]
+            {11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
+             51, 52, 53, 54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84,
+             91, 92, 93, 94, 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124};
 
-    int imageDataExpected[] = {9, 5, 1,
-                               10, 6, 2,
-                               11, 7, 3,
-                               12, 8, 4};
+    unsigned char imageDataExpected[] = {91, 92, 93, 94, 51, 52, 53, 54, 11, 12, 13, 14,
+                                         101, 102, 103, 104, 61, 62, 63, 64, 21, 22, 23, 24,
+                                         111, 112, 113, 114, 71, 72, 73, 74, 31, 32, 33, 34,
+                                         121, 122, 123, 124, 81, 82, 83, 84, 41, 42, 43, 44};
 
     image.setRawData(imageData, 4, 3, 4);
     image.rotate90();
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(int); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }

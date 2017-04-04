@@ -19,7 +19,7 @@ class Image {
 protected:
     ImageMetaData mMetaData;
     char mLastError[200];
-    void *mImageData;
+    unsigned char *mImageData;
     void releaseRawData();
     void clearMetaData();
     int mComponentsPerPixel;
@@ -28,9 +28,6 @@ public:
     Image(int componentsPerPixel);
     virtual ~Image();
 
-//    virtual int loadImage(const char* path) = 0;
-//    virtual int saveImage(const char* path, int quality) = 0;
-
     IOResult loadImage(ImageProcessor &processor, const char *path);
     int saveImage(ImageProcessor &processor, const char *path);
 
@@ -38,7 +35,7 @@ public:
     string getAndClearLastError();
 
     RawData getRawData();
-    void setRawData(void *data, int w, int h, int componentsPerPixel);
+    void setRawData(unsigned char *data, int w, int h, int componentsPerPixel);
     void swap(int src, int dst);
     void copy(int src, int dst);
 

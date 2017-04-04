@@ -92,11 +92,11 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
     int result = NO_ERR;
 
     ImageMetaData metaData;
-    void * data;
+    unsigned char  * data;
     metaData.imageWidth = cinfo.image_width;
     metaData.imageHeight = cinfo.image_height;
     metaData.componentSize = cinfo.num_components;
-    data = malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
+    data = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
     if (data == 0) {
         fclose(infile);
         return IOResult(OUT_OF_MEMORY);

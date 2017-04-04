@@ -74,7 +74,7 @@ TEST(ImageJPEG3, SetPixels) {
     int data[3];
     int size = sizeof(data);
     memset(&data, 0, size);
-    image.setPixels(&data[0], 4);
+    image.setPixels(data, 4);
 
     ASSERT_EQ(BITMAP_COLOR(0xFFA42725), data[0]);
     ASSERT_EQ(BITMAP_COLOR(0xFFFFDAD8), data[1]);

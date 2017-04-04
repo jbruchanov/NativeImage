@@ -9,7 +9,7 @@
 using namespace std;
 
 struct RawData {
-    void* data;
+    unsigned char* data;
     ImageMetaData metaData;
 };
 

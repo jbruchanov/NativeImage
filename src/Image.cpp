@@ -30,8 +30,6 @@ void Image::releaseRawData() {
     mImageData = nullptr;
 }
 
-
-
 RawData Image::getRawData() {
     RawData r;
     r.data = mImageData;
@@ -79,7 +77,8 @@ void Image::rotate90() {
         } while (next > start);
 
         if (next >= start && i != 1) {
-            if(mComponentsPerPixel == RGBA) {
+            //algorithm for int
+            /*
                 const int tmp = ((int *) mImageData)[start];
                 next = start;
                 do {
@@ -87,23 +86,21 @@ void Image::rotate90() {
                     ((int *) mImageData)[next] = (i == start) ? tmp : ((int *) mImageData)[i];
                     next = i;
                 } while (next > start);
-            } else if(mComponentsPerPixel == RGB) {
                 unsigned char * data = ((unsigned char *) mImageData);
-                // const int tmp = ((int *) mRawData)[start];
-                memcpy(&rgbTmp, data + (start * mComponentsPerPixel), mComponentsPerPixel * sizeof(unsigned char));
-                next = start;
-                do {
-                    i = (next % h) * w + next / h;
-                    //((int *) mRawData)[next] = (i == start) ? tmp : ((int *) mRawData)[i];
-                    if (i == start) {
-                        int realOffset = (next * mComponentsPerPixel);
-                        memcpy(data + realOffset, &rgbTmp, mComponentsPerPixel * sizeof(unsigned char));
-                    } else {
-                        copy(i, next);
-                    }
-                    next = i;
-                } while (next > start);
-            }
+            */
+            memcpy(&rgbTmp, mImageData + (start * mComponentsPerPixel), mComponentsPerPixel * sizeof(unsigned char));
+            next = start;
+            do {
+                i = (next % h) * w + next / h;
+                //((int *) mRawData)[next] = (i == start) ? tmp : ((int *) mRawData)[i];
+                if (i == start) {
+                    int realOffset = (next * mComponentsPerPixel);
+                    memcpy(mImageData + realOffset, &rgbTmp, mComponentsPerPixel * sizeof(unsigned char));
+                } else {
+                    copy(i, next);
+                }
+                next = i;
+            } while (next > start);
         }
     }
 
@@ -132,7 +129,7 @@ void Image::rotate180() {
     }
 }
 
-void Image::setRawData(void *data, int w, int h, int componentsPerPixel) {
+void Image::setRawData(unsigned char *data, int w, int h, int componentsPerPixel) {
     if (!(componentsPerPixel == RGBA || componentsPerPixel == RGB)) {
         throw "Only 4 or 3 for componentsPerPixel";
     }
@@ -151,31 +148,19 @@ string Image::getAndClearLastError() {
 }
 
 void Image::swap(int src, int dst) {
-    if (mComponentsPerPixel == RGBA) {
-        int* data = (int *) mImageData;
-        data[src] ^= data[dst];
-        data[dst] ^= data[src];
-        data[src] ^= data[dst];
-    } else if (mComponentsPerPixel == RGB) {
-        unsigned char* data = (unsigned char *) mImageData;
-        src *= mComponentsPerPixel;
-        dst *= mComponentsPerPixel;
-        for (int i = 0; i < mComponentsPerPixel; i++) {
-            std::swap(data[src + i], data[dst + i]);
-        }
+    unsigned char *data = (unsigned char *) mImageData;
+    src *= mComponentsPerPixel;
+    dst *= mComponentsPerPixel;
+    for (int i = 0; i < mComponentsPerPixel; i++) {
+        std::swap(data[src + i], data[dst + i]);
     }
 }
 
 void Image::copy(int src, int dst) {
-    if (mComponentsPerPixel == RGBA) {
-        int *data = (int *) mImageData;
-        data[dst] = data[src];
-    } else {
-        unsigned char *data = (unsigned char *) mImageData;
-        src *= mComponentsPerPixel;
-        dst *= mComponentsPerPixel;
-        memcpy(&data[dst], &data[src], (size_t) mComponentsPerPixel);
-    }
+    unsigned char *data = (unsigned char *) mImageData;
+    src *= mComponentsPerPixel;
+    dst *= mComponentsPerPixel;
+    memcpy(&data[dst], &data[src], (size_t) mComponentsPerPixel);
 }
 
 void Image::clearMetaData() {
