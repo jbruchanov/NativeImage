@@ -34,7 +34,7 @@ public:
     ImageMetaData getMetaData();
     string getAndClearLastError();
 
-    RawData getRawData();
+    ImageData getImageData();
     void setRawData(unsigned char *data, int w, int h, int componentsPerPixel);
     void swap(int src, int dst);
     void copy(int src, int dst);

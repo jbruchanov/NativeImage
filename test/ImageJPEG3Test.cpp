@@ -43,7 +43,7 @@ TEST(ImageJPEG3, LoadRawData) {
     string f = JPEG_3X1_PX;
     Image image(3);
     image.loadImage(prc, f.c_str());
-    RawData raw = image.getRawData();
+    ImageData raw = image.getImageData();
     unsigned char *ptr = (unsigned char *) raw.data;
     ASSERT_EQ(3, raw.metaData.pixelCount());
 
@@ -62,7 +62,7 @@ TEST(ImageJPEG3, FreesMemoryOnNewLoad) {
     image.loadImage(prc, f.c_str());
     f = JPEG_INVALID;
     image.loadImage(prc, f.c_str());
-    RawData data = image.getRawData();
+    ImageData data = image.getImageData();
     ASSERT_EQ(nullptr, data.data);
     ASSERT_EQ(0, data.metaData.pixelCount());
 }

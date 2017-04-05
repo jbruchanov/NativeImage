@@ -30,8 +30,8 @@ void Image::releaseRawData() {
     mImageData = nullptr;
 }
 
-RawData Image::getRawData() {
-    RawData r;
+ImageData Image::getImageData() {
+    ImageData r;
     r.data = mImageData;
     r.metaData = mMetaData;
     return r;
@@ -39,12 +39,12 @@ RawData Image::getRawData() {
 
 void Image::setPixels(int *target, int targetComponentsPerPixel) {
     if (mImageData != NULL && target != NULL) {
-        RawData data = getRawData();
+        ImageData data = getImageData();
         if (mComponentsPerPixel == targetComponentsPerPixel) {
             memcpy(target, data.data, (size_t) (data.metaData.pixelCount() * mComponentsPerPixel));
         } else if (mComponentsPerPixel == RGB && targetComponentsPerPixel == RGBA) {
             unsigned char a, b, c;
-            unsigned char *rawData = (unsigned char *) mImageData;
+            unsigned char *rawData = mImageData;
             for (int i = 0, l = mMetaData.pixelCount(); i < l; i++) {
                 int startIndex = i * mComponentsPerPixel;
                 a = rawData[startIndex];
@@ -148,7 +148,7 @@ string Image::getAndClearLastError() {
 }
 
 void Image::swap(int src, int dst) {
-    unsigned char *data = (unsigned char *) mImageData;
+    unsigned char *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;
     for (int i = 0; i < mComponentsPerPixel; i++) {
@@ -157,10 +157,10 @@ void Image::swap(int src, int dst) {
 }
 
 void Image::copy(int src, int dst) {
-    unsigned char *data = (unsigned char *) mImageData;
+    unsigned char *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;
-    memcpy(&data[dst], &data[src], (size_t) mComponentsPerPixel);
+    memcpy(&data[dst], &mImageData[src], (size_t) mComponentsPerPixel);
 }
 
 void Image::clearMetaData() {

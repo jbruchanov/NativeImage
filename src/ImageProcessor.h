@@ -8,12 +8,12 @@
 
 using namespace std;
 
-struct RawData {
+struct ImageData {
     unsigned char* data;
     ImageMetaData metaData;
 };
 
-struct IOResult : RawData {
+struct IOResult : ImageData {
     IOResult() {}
 
     IOResult(int code) {
@@ -22,7 +22,7 @@ struct IOResult : RawData {
     int result;
 };
 
-struct InputData : RawData {
+struct InputData : ImageData {
     int quality;
     int componentsPerPixel;
 };

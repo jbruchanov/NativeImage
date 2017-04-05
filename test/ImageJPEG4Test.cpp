@@ -40,24 +40,35 @@ TEST(ImageJPEG4, LoadInvalidImage) {
     ASSERT_EQ(0, err2.length());
 }
 
-TEST(ImageJPEG4, LoadRawData) {
+TEST(ImageJPEG4, LoadRawData_1PX) {
+    string f = JPEG_1X1_PX;
+    Image image(4);
+    image.loadImage(prc, f.c_str());
+    ImageData raw = image.getImageData();
+    unsigned char *ptr = raw.data;
+    ASSERT_EQ(1, raw.metaData.pixelCount());
+
+    unsigned char exp[] = {0xFF, 0x00, 0x00, 0xFE};
+    for (int i = 0; i < 4; i++) {
+        unsigned char pc = ptr[i];
+        ASSERT_EQ(exp[i], pc);
+    }
+}
+
+TEST(ImageJPEG4, LoadRawData_3PX) {
     string f = JPEG_3X1_PX;
     Image image(4);
     image.loadImage(prc, f.c_str());
-    RawData raw = image.getRawData();
-    int *ptr = (int *) raw.data;
+    ImageData raw = image.getImageData();
+    unsigned char *ptr = raw.data;
     ASSERT_EQ(3, raw.metaData.pixelCount());
-    int p1 = ptr[0];
-    int p2 = ptr[1];
-    int p3 = ptr[2];
-
-    int c1 = BITMAP_COLOR(p1);
-    int c2 = BITMAP_COLOR(p2);
-    int c3 = BITMAP_COLOR(p3);
-
-    ASSERT_EQ(0xFFA42725, c1);
-    ASSERT_EQ(0xFFFFDAD8, c2);
-    ASSERT_EQ(0xFF000000, c3);
+    unsigned char exp[] = {0xFF, 0x25, 0x27, 0xA4,
+                           0xFF, 0xD8, 0xDA, 0xFF,
+                           0xFF, 0x00, 0x00, 0x00};
+    for (int i = 0; i < 12; i++) {
+        unsigned char pc = ptr[i];
+        ASSERT_EQ(exp[i], pc);
+    }
 }
 
 TEST(ImageJPEG4, FreesMemoryOnNewLoad) {
@@ -66,7 +77,7 @@ TEST(ImageJPEG4, FreesMemoryOnNewLoad) {
     image.loadImage(prc, f.c_str());
     f = JPEG_INVALID;
     image.loadImage(prc, f.c_str());
-    RawData data = image.getRawData();
+    ImageData data = image.getImageData();
     ASSERT_EQ(nullptr, data.data);
     ASSERT_EQ(0, data.metaData.pixelCount());
 }
@@ -80,7 +91,7 @@ TEST(ImageJPEG4, SetPixels) {
     memset(&data, 0, size);
     image.setPixels(data, 4);
 
-    int *ptr = (int *) image.getRawData().data;
+    int *ptr = (int *) image.getImageData().data;
     ASSERT_EQ(ptr[0], data[0]);
     ASSERT_EQ(ptr[1], data[1]);
     ASSERT_EQ(ptr[2], data[2]);

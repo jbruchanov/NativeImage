@@ -18,21 +18,26 @@ struct _Error {
 
 typedef struct _Error *_ErrorPtr;
 
-int storeRawData(RawData &rd, int componentsPerPixel, JSAMPROW row, int stride, int pixelIndex) {
+int storeRawData(IOResult &rd, int componentsPerPixel, JSAMPROW row, int stride, int pixelIndex) {
     if (componentsPerPixel == RGBA) {
         unsigned char a, b, c;
         int i = 0;
+        int pixelIndexStart = pixelIndex * RGBA;
         while (i < stride) {
             a = row[i++];
             b = row[i++];
             c = row[i++];
-            ((int *) rd.data)[pixelIndex++] = 0xFF000000 | a << 0 | b << 8 | c << 16;
+            //internal android bitmap is in following order
+            rd.data[pixelIndexStart++] = 0xFF;
+            rd.data[pixelIndexStart++] = c;
+            rd.data[pixelIndexStart++] = b;
+            rd.data[pixelIndexStart++] = a;
         }
     } else if (componentsPerPixel == RGB) {
         void *start = rd.data + (pixelIndex * componentsPerPixel * sizeof(unsigned char));
         memcpy(start, row, stride);
-        pixelIndex += rd.metaData.imageWidth;
     }
+    pixelIndex += rd.metaData.imageWidth;
     return pixelIndex;
 }
 
@@ -102,7 +107,10 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
         return IOResult(OUT_OF_MEMORY);
     }
 
-    RawData rawData =  {data, metaData};
+    IOResult ioResult;
+    ioResult.result = result;
+    ioResult.metaData = metaData;
+    ioResult.data = data;
 
     /* Step 4: set parameters for decompression */
 
@@ -133,9 +141,8 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
              */
             (void) jpeg_read_scanlines(&cinfo, buffer, 1);
             /* Assume put_scanline_someplace wants a pointer and sample count. */
-            index = storeRawData(rawData, componentsPerPixel, buffer[0], row_stride, index);
+            index = storeRawData(ioResult, componentsPerPixel, buffer[0], row_stride, index);
         }
-
         /* Step 7: Finish decompression */
 
         (void) jpeg_finish_decompress(&cinfo);
@@ -160,13 +167,8 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
      * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
      */
 
-    IOResult lr;
-    lr.result = result;
-    lr.metaData = metaData;
-    lr.data = data;
-
     /* And we're done! */
-    return lr;
+    return ioResult;
 }
 
 int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
@@ -210,19 +212,20 @@ int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
     row_stride = metaData.imageWidth * RGB;    /* JSAMPLEs per row in image_buffer */
 
     unsigned char tmp[inputData.componentsPerPixel == RGBA ? row_stride : 0];//just keep it empty it if we have non 1
-    int iPixel = 0;
+    int pixelIndexStart = 0;
     while (cinfo.next_scanline < cinfo.image_height) {
         //convert back our internal bitmap format to jpeg format
         if (inputData.componentsPerPixel == RGBA) {
-            for (int i = 0; i < row_stride; i++) {
-                int px = ((int *) inputData.data)[iPixel++];
-                tmp[i] = (unsigned char) (px);
-                tmp[++i] = (unsigned char) (px >> 8);
-                tmp[++i] = (unsigned char) (px >> 16);
+            for (int i = 0; i < row_stride; i += RGB) {
+                //convert back android internal format into jpeg expectation
+                tmp[i + 0] = inputData.data[pixelIndexStart + 3];
+                tmp[i + 1] = inputData.data[pixelIndexStart + 2];
+                tmp[i + 2] = inputData.data[pixelIndexStart + 1];
+                pixelIndexStart += RGBA;
             }
-            row_pointer[0] = &tmp[0];
+            row_pointer[0] = tmp;
         } else if (inputData.componentsPerPixel == RGB) {
-            row_pointer[0] = ((unsigned char *) inputData.data) + (cinfo.next_scanline * metaData.imageWidth * inputData.componentsPerPixel);
+            row_pointer[0] = inputData.data + (cinfo.next_scanline * metaData.imageWidth * inputData.componentsPerPixel);
         }
         (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
