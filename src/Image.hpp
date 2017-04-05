@@ -28,8 +28,9 @@ public:
     Image(int componentsPerPixel);
     virtual ~Image();
 
-    IOResult loadImage(ImageProcessor &processor, const char *path);
-    int saveImage(ImageProcessor &processor, const char *path);
+    IOResult loadImage(ImageProcessor *processor, const char *path);
+    int saveImage(ImageProcessor *processor, const char *path);
+    int saveImage(ImageProcessor *processor, const char *path, Json *saveArgs);
 
     ImageMetaData getMetaData();
     string getAndClearLastError();

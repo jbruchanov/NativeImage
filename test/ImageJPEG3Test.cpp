@@ -16,14 +16,14 @@ TEST(ImageJPEG3, LoadingImage) {
     string f = JPEG_1X1_PX;
     Image image(3);
 
-    IOResult ior = image.loadImage(prc, f.c_str());
+    IOResult ior = image.loadImage(&prc, f.c_str());
     ASSERT_EQ(NO_ERR, ior.result);
 }
 
 TEST(ImageJPEG3, MetaDataImageSize) {
     string f = JPEG_3X1_PX;
     Image image(3);
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     ImageMetaData data = image.getMetaData();
     ASSERT_EQ(1, data.imageHeight);
     ASSERT_EQ(3, data.imageWidth);
@@ -32,7 +32,7 @@ TEST(ImageJPEG3, MetaDataImageSize) {
 TEST(ImageJPEG3, LoadInvalidImage) {
     string f = JPEG_INVALID;
     Image image(3);
-    IOResult ior = image.loadImage(prc, f.c_str());
+    IOResult ior = image.loadImage(&prc, f.c_str());
     ASSERT_NE(NO_ERR, ior.result);
     string err = image.getAndClearLastError();
     string err2 = image.getAndClearLastError();
@@ -42,7 +42,7 @@ TEST(ImageJPEG3, LoadInvalidImage) {
 TEST(ImageJPEG3, LoadRawData) {
     string f = JPEG_3X1_PX;
     Image image(3);
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     ImageData raw = image.getImageData();
     unsigned char *ptr = (unsigned char *) raw.data;
     ASSERT_EQ(3, raw.metaData.pixelCount());
@@ -59,9 +59,9 @@ TEST(ImageJPEG3, LoadRawData) {
 TEST(ImageJPEG3, FreesMemoryOnNewLoad) {
     string f = JPEG_3X1_PX;
     Image image(3);
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     f = JPEG_INVALID;
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     ImageData data = image.getImageData();
     ASSERT_EQ(nullptr, data.data);
     ASSERT_EQ(0, data.metaData.pixelCount());
@@ -70,7 +70,7 @@ TEST(ImageJPEG3, FreesMemoryOnNewLoad) {
 TEST(ImageJPEG3, SetPixels) {
     string f = JPEG_3X1_PX;
     Image image(3);
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     int data[3];
     int size = sizeof(data);
     memset(&data, 0, size);
@@ -153,13 +153,13 @@ TEST(ImageJPEG3, Rotate90_3) {
 TEST(ImageJPEG3, SaveImage) {
     Image image(3);
     string f = JPEG_SAMPLE_ASSET;
-    image.loadImage(prc, f.c_str());
+    image.loadImage(&prc, f.c_str());
     const char *path = "pokus3.jpg";
 
-    image.saveImage(prc, path);
+    image.saveImage(&prc, path);
 
     Image image2(3);
-    image2.loadImage(prc, path);
+    image2.loadImage(&prc, path);
     const ImageMetaData metaData = image.getMetaData();
     ASSERT_EQ(image.getMetaData().imageWidth, metaData.imageWidth);
     ASSERT_EQ(image.getMetaData().imageHeight, metaData.imageHeight);

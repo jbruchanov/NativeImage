@@ -12,7 +12,6 @@
 #include "LogHelper.h"
 #include "Errors.h"
 #include "JNIHelper.h"
-#include "ImageProcessor.h"
 #include "JpegImageProcessor.h"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
@@ -70,19 +69,19 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1init
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadImage
         (JNIEnv *env, jobject obj, jstring jpath, jint processor) {
     int result = JNI_ERR;
+    const char *path = nullptr;
     try {
         Image *image = getObject(env, obj);
-        const char *path = env->GetStringUTFChars(jpath, 0);
+        path = env->GetStringUTFChars(jpath, 0);
         FILE *infile;
         if ((infile = fopen(path, "rb")) == NULL) {
             LOGD("can't open %s\n", path);
-            return (jint) 1;
+            return (jint) CANT_OPEN_FILE;
         } else {
             fclose(infile);
         }
-        ImageProcessor *prc = getImageProcessor((int) processor);
-        IOResult ior = image->loadImage(*prc, path);
-        delete(prc);
+        unique_ptr<ImageProcessor> prc(getImageProcessor((int) processor));
+        IOResult ior = image->loadImage(prc.get(), path);
         LOGD("LoadedResult:%d", ior.result);
         if (OUT_OF_MEMORY == ior.result) {
             string errMsg = string("Unable to load:'") + path + "'";
@@ -91,6 +90,50 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadIma
         env->ReleaseStringUTFChars(jpath, path);
     } catch (...) {
         LOGE("CRASH!!!!!!");
+    }
+    if (path != nullptr) {
+        env->ReleaseStringUTFChars(jpath, path);
+    }
+    return (jint) result;
+}
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _saveImage
+ * Signature: (Ljava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1saveImage
+        (JNIEnv *env, jobject obj, jstring jpath, jint processor, jstring jsonArgs) {
+    int result = JNI_ERR;
+    const char *path = nullptr;
+    try {
+        Json saveArgs = nullptr;
+        if (jsonArgs != nullptr) {
+            string err;
+            const char *json = env->GetStringUTFChars(jsonArgs, 0);
+            saveArgs = Json::parse(json, err);
+            env->ReleaseStringUTFChars(jsonArgs, json);
+            if (err.length() > 0) {
+                return INVALID_JSON;
+            }
+        }
+        Image *image = getObject(env, obj);
+        path = env->GetStringUTFChars(jpath, 0);
+        FILE *infile;
+        if ((infile = fopen(path, "wb")) == NULL) {
+            LOGD("can't open %s\n", path);
+            return (jint) CANT_OPEN_FILE;
+        } else {
+            fclose(infile);
+        }
+        unique_ptr<ImageProcessor> prc(getImageProcessor((int) processor));
+        IOResult ior = image->saveImage(prc.get(), path, &saveArgs);
+        LOGD("SaveResult:%d", ior.result);
+    } catch (...) {
+        LOGE("CRASH!!!!!!");
+    }
+    if (path != nullptr) {
+        env->ReleaseStringUTFChars(jpath, path);
     }
     return (jint) result;
 }

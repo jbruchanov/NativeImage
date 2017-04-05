@@ -2,11 +2,12 @@
 // Created by scurab on 04/04/17.
 //
 #include "ImageMetaData.h"
-
+#include "../json11/json11.hpp"
 #ifndef NATIVEIMAGEAPP_IMAGEPROCESSOR_H
 #define NATIVEIMAGEAPP_IMAGEPROCESSOR_H
 
 using namespace std;
+using namespace json11;
 
 struct ImageData {
     unsigned char* data;

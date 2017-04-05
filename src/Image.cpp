@@ -2,9 +2,13 @@
 // Created by scurab on 01/04/17.
 //
 
+#include "../json11/json11.hpp"
 #include <cstring>
 #include "Image.hpp"
 #include "Errors.h"
+#include "cstring"
+
+using namespace json11;
 
 Image::Image(int componentsPerPixel) {
     if (!(componentsPerPixel == RGBA || componentsPerPixel == RGB)) {
@@ -169,10 +173,10 @@ void Image::clearMetaData() {
     mComponentsPerPixel = componentsPerPixel;
 }
 
-IOResult Image::loadImage(ImageProcessor &processor, const char *path) {
+IOResult Image::loadImage(ImageProcessor *processor, const char *path) {
     releaseRawData();
     clearMetaData();
-    IOResult result = processor.loadImage(path, mComponentsPerPixel, mLastError);
+    IOResult result = processor->loadImage(path, mComponentsPerPixel, mLastError);
     if (NO_ERR == result.result) {
         mImageData = result.data;
         mMetaData = result.metaData;
@@ -180,14 +184,25 @@ IOResult Image::loadImage(ImageProcessor &processor, const char *path) {
     return result;
 }
 
-int Image::saveImage(ImageProcessor &processor, const char *path) {
+int Image::saveImage(ImageProcessor *processor, const char *path, json11::Json *saveArgs) {
     if (mImageData == nullptr) {
         return NO_DATA;
     }
     InputData input;
     input.data = mImageData;
-    input.quality = 100;
+    input.quality = 85;
+    if (saveArgs != nullptr && saveArgs->is_object()) {
+        json11::Json quality = (*saveArgs)["jpegQuality"];
+        if (quality.is_number()) {
+            int value = quality.int_value();
+            input.quality = max(0, min(100, value));
+        }
+    }
     input.metaData = mMetaData;
     input.componentsPerPixel = mComponentsPerPixel;
-    return processor.saveImage(path, input);
+    return processor->saveImage(path, input);
+}
+
+int Image::saveImage(ImageProcessor *processor, const char *path) {
+    return this->saveImage(processor, path, nullptr);
 }

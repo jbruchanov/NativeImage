@@ -25,6 +25,14 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadIma
 
 /*
  * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _saveImage
+ * Signature: (Ljava/lang/String;ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1saveImage
+        (JNIEnv *, jobject, jstring, jint, jstring);
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
  * Method:    _getMetaData
  * Signature: ()Ljava/lang/String;
  */
