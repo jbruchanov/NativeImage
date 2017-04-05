@@ -13,3 +13,4 @@ call %ANDROID_NDK%\ndk-build NDK_DEBUG=1
 
 cd ..
 rmdir jni /S /Q
+pause
