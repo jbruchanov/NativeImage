@@ -1,6 +1,4 @@
-//
-// Created by jbruchanov on 29/03/17.
-//
+#include "JNI_NativeImage.h"
 
 #ifdef DESKTOP
 
@@ -9,7 +7,6 @@
 #include "android/bitmap.h"
 #endif
 
-#include "JNI_JpegImage.h"
 #include "../json11/json11.hpp"
 #include "Image.hpp"
 #include "LogHelper.h"
@@ -17,10 +14,9 @@
 #include "JNIHelper.h"
 #include "JpegImageProcessor.h"
 
-#define CLASS_NAME "com/scurab/andriod/nativeimage/JPEGImage"
+#define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
 #define METHOD_SET_NATIVE_REF "onSetNativeRef"
 #define METHOD_GET_NATIVE_REF "getNativeRef"
-
 
 using namespace json11;
 using namespace std;
@@ -34,28 +30,28 @@ Image* getObject(JNIEnv *env, jobject obj) {
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    init
- * Signature: ()V
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _init
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1init
-        (JNIEnv *env, jobject obj, jint componentsPerPixel) {
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1init
+        (JNIEnv *env, jobject thiz, jint componentsPerPixel) {
     jclass clazz = env->FindClass(CLASS_NAME);
     jmethodID methodId = env->GetMethodID(clazz, METHOD_SET_NATIVE_REF, "(J)V");//void onSetNativeRef(long ref)
     // Call the method on the object
 
     Image *image = new Image(componentsPerPixel);
     LOGD("JPEGImagePointer:%ld", (long)image);
-    env->CallVoidMethod(obj, methodId, (jlong)image);
+    env->CallVoidMethod(thiz, methodId, (jlong)image);
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    loadImage
- * Signature: (Ljava/lang/String;)V
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _loadImage
+ * Signature: (Ljava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
-(JNIEnv *env, jobject obj, jstring jpath) {
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadImage
+        (JNIEnv *env, jobject obj, jstring jpath) {
     int result = JNI_ERR;
     try {
         Image *image = getObject(env, obj);
@@ -80,15 +76,15 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1loadImage
     } catch (...) {
         LOGE("CRASH!!!!!!");
     }
-    return (jint)result;
+    return (jint) result;
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    getDetails
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _getMetaData
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMetaData
+JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1getMetaData
         (JNIEnv *env, jobject obj) {
     Image *image = getObject(env, obj);
     const ImageMetaData metaData = image->getMetaData();
@@ -103,23 +99,22 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1getMet
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
- * Method:    dispose
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1dispose
-(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1dispose
+        (JNIEnv *env, jobject obj) {
     Image *image = getObject(env, obj);
     LOGD("JPEGImagePointer:%ld", (long)image);
     delete image;
 }
-
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
  * Method:    _setPixels
- * Signature: (Landroid/graphics/Bitmap;)V
+ * Signature: (Ljava/lang/Object;)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixels
         (JNIEnv *env, jobject obj, jobject bitmap) {
 
     AndroidBitmapInfo info;
@@ -158,11 +153,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1setPixels
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_JPEGImage
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
  * Method:    _rotate
- * Signature: ()V
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1rotate
+JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
         (JNIEnv *env, jobject obj, jint angle) {
     Image *image = getObject(env, obj);
     switch ((int) angle) {
@@ -178,7 +173,8 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_JPEGImage__1rotate
             image->rotate180();
             image->rotate90();
             break;
+        default:
+            //do nothing JAVA will throw the exception before
+            break;
     }
 }
-
-
