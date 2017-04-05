@@ -27,7 +27,7 @@ struct InputData : ImageData {
     int componentsPerPixel;
 };
 
-struct ImageProcessor {
+class ImageProcessor {
 public:
     virtual IOResult loadImage(const char *path, int componentsPerPixel, char *err) = 0;
     virtual int saveImage(const char* path, InputData &data) = 0;

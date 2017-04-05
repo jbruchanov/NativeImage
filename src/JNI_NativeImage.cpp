@@ -12,6 +12,7 @@
 #include "LogHelper.h"
 #include "Errors.h"
 #include "JNIHelper.h"
+#include "ImageProcessor.h"
 #include "JpegImageProcessor.h"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
@@ -27,6 +28,22 @@ Image* getObject(JNIEnv *env, jobject obj) {
     // Call the method on the object
     jlong ptr = env->CallLongMethod(obj, methodId);
     return reinterpret_cast<Image*>(ptr);
+}
+
+/**
+ * Java Format enum - JPEG_RGB(1), PNG_RGB(2), PNG_RGBA(3);
+ * @param value
+ * @return
+ */
+ImageProcessor* getImageProcessor(int value) {
+    switch (value) {
+        case 1:
+            return new JpegImageProcessor();
+//        case 2:
+//            break;
+//        case 3:
+//            break;
+    }
 }
 
 /*
@@ -51,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1init
  * Signature: (Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadImage
-        (JNIEnv *env, jobject obj, jstring jpath) {
+        (JNIEnv *env, jobject obj, jstring jpath, jint processor) {
     int result = JNI_ERR;
     try {
         Image *image = getObject(env, obj);
@@ -63,10 +80,9 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadIma
         } else {
             fclose(infile);
         }
-
-        JpegImageProcessor prc;
-
-        IOResult ior = image->loadImage(prc, path);
+        ImageProcessor *prc = getImageProcessor((int) processor);
+        IOResult ior = image->loadImage(*prc, path);
+        delete(prc);
         LOGD("LoadedResult:%d", ior.result);
         if (OUT_OF_MEMORY == ior.result) {
             string errMsg = string("Unable to load:'") + path + "'";
