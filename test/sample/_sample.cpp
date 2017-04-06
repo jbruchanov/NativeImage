@@ -7,6 +7,8 @@
 #include "../../json11/json11.hpp"
 #include "../../src/ImageProcessor.h"
 #include "../../src/JpegImageProcessor.h"
+#include "../../src/Image.hpp"
+#include "../Assets.h"
 
 using namespace std;
 
@@ -50,5 +52,24 @@ TEST(Sample, TestUniquePtr) {
         throw 1;
     } catch (...) {
 
+    }
+}
+
+TEST(ImageJPEG3, RotationSpeed) {
+    Image image(3);
+    string f = JPEG_SAMPLE_ASSET;
+    JpegImageProcessor prc;
+    image.loadImage(&prc, f.c_str());
+
+    for(int x = 0;x<2;x++) {
+        long sum = 0;
+        int repeats = 10;
+        for (int i = 0; i < repeats; i++) {
+            clock_t start = clock();
+            image.rotate90(x == 1);
+            clock_t end = clock();
+            sum += (end - start);
+        }
+        printf("\nRotate90 avg:%ld fast:%s\n", sum / repeats, (x == 1) ? "true" : "false");
     }
 }

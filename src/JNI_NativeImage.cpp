@@ -217,20 +217,20 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
-        (JNIEnv *env, jobject obj, jint angle) {
+        (JNIEnv *env, jobject obj, jint angle, jboolean fast) {
     Image *image = getObject(env, obj);
     switch ((int) angle) {
         case 0:
             break;
         case 90:
-            image->rotate90();
+            image->rotate90((bool)fast);
             break;
         case 180:
             image->rotate180();
             break;
         case 270:
             image->rotate180();
-            image->rotate90();
+            image->rotate90((bool)fast);
             break;
         default:
             //do nothing JAVA will throw the exception before

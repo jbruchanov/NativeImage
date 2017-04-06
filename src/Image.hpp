@@ -41,7 +41,7 @@ public:
     void copy(int src, int dst);
 
     void setPixels(int* target, int targetComponentsPerPixel);
-    void rotate90();
+    void rotate90(bool fast);
     void rotate180();
 };
 

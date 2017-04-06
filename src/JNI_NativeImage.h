@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
-(JNIEnv *, jobject, jint);
+(JNIEnv *, jobject, jint, jboolean);
 
 #ifdef __cplusplus
 }

@@ -7,6 +7,7 @@
 #include "Image.hpp"
 #include "Errors.h"
 #include "cstring"
+#include "Debug.h"
 
 using namespace json11;
 
@@ -60,51 +61,67 @@ void Image::setPixels(int *target, int targetComponentsPerPixel) {
     }
 }
 
-void Image::rotate90() {
+void Image::rotate90(bool fast) {
     ImageMetaData metaData = getMetaData();
     int w = mMetaData.imageWidth;
     int h = mMetaData.imageHeight;
     int is, it;
 
-    //http://softwareengineering.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
-    //transpose
-    unsigned int next = 0;
-    unsigned int i = 0;
-    unsigned char rgbTmp[mComponentsPerPixel];//needed only for non 4/px
-    memset(rgbTmp, 0, sizeof(rgbTmp));
-    for (unsigned int start = 0; start <= w * h - 1; ++start) {
-        next = start;
-        i = 0;
-        do {
-            ++i;
-            next = (next % h) * w + next / h;
-        } while (next > start);
+    if (fast) {
+        unsigned char *temp = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * mComponentsPerPixel));
+        memset(temp, 0, (metaData.imageWidth * metaData.imageHeight * mComponentsPerPixel));
+        //transpose
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                is = ARRAY_INDEX(x, y, w);
+                it = ARRAY_INDEX(y, x, h);
+                memcpy(temp + (it * mComponentsPerPixel), mImageData + (is * mComponentsPerPixel),
+                       (size_t) mComponentsPerPixel);
+            }
+        }
+        releaseRawData();
+        mImageData = temp;
+    } else {
+        //http://softwareengineering.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
+        //transpose
+        unsigned int next = 0;
+        unsigned int i = 0;
+        unsigned char rgbTmp[mComponentsPerPixel];//needed only for non 4/px
+        memset(rgbTmp, 0, sizeof(rgbTmp));
 
-        if (next >= start && i != 1) {
-            //algorithm for int
-            /*
-                const int tmp = ((int *) mImageData)[start];
+        for (unsigned int start = 0; start <= w * h - 1; ++start) {
+            next = start;
+            i = 0;
+            do {
+                ++i;
+                next = (next % h) * w + next / h;
+            } while (next > start);
+
+            if (next >= start && i != 1) {
+               /* following code doesn't make it singificantly faster for 4bytes
+                * const int tmp = ((int *) mImageData)[start];
+                    next = start;
+                    do {
+                        i = (next % h) * w + next / h;
+                        ((int *) mImageData)[next] = (i == start) ? tmp : ((int *) mImageData)[i];
+                        next = i;
+                    } while (next > start);
+                */
+                memcpy(&rgbTmp, mImageData + (start * mComponentsPerPixel),
+                       mComponentsPerPixel * sizeof(unsigned char));
                 next = start;
                 do {
                     i = (next % h) * w + next / h;
-                    ((int *) mImageData)[next] = (i == start) ? tmp : ((int *) mImageData)[i];
+                    //((int *) mRawData)[next] = (i == start) ? tmp : ((int *) mRawData)[i];
+                    if (i == start) {
+                        int realOffset = (next * mComponentsPerPixel);
+                        memcpy(mImageData + realOffset, &rgbTmp, mComponentsPerPixel * sizeof(unsigned char));
+                    } else {
+                        copy(i, next);
+                    }
                     next = i;
                 } while (next > start);
-                unsigned char * data = ((unsigned char *) mImageData);
-            */
-            memcpy(&rgbTmp, mImageData + (start * mComponentsPerPixel), mComponentsPerPixel * sizeof(unsigned char));
-            next = start;
-            do {
-                i = (next % h) * w + next / h;
-                //((int *) mRawData)[next] = (i == start) ? tmp : ((int *) mRawData)[i];
-                if (i == start) {
-                    int realOffset = (next * mComponentsPerPixel);
-                    memcpy(mImageData + realOffset, &rgbTmp, mComponentsPerPixel * sizeof(unsigned char));
-                } else {
-                    copy(i, next);
-                }
-                next = i;
-            } while (next > start);
+            }
         }
     }
 
@@ -151,7 +168,7 @@ string Image::getAndClearLastError() {
     return err;
 }
 
-void Image::swap(int src, int dst) {
+inline void Image::swap(int src, int dst) {
     unsigned char *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;
@@ -160,7 +177,7 @@ void Image::swap(int src, int dst) {
     }
 }
 
-void Image::copy(int src, int dst) {
+inline void Image::copy(int src, int dst) {
     unsigned char *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;

@@ -4,7 +4,6 @@
 
 #include <googletest/include/gtest/gtest.h>
 #include "../src/Errors.h"
-#include "TestHelper.h"
 #include "../src/ImageProcessor.h"
 #include "../src/Image.hpp"
 #include "../src/JpegImageProcessor.h"
@@ -98,7 +97,7 @@ TEST(ImageJPEG3, Rotate180) {
     }
 }
 
-TEST(ImageJPEG3, Rotate90_1) {
+TEST(ImageJPEG3, Rotate90_1Slow) {
     Image image(3);
     unsigned char *imageData = new unsigned char[9]{1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -107,14 +106,30 @@ TEST(ImageJPEG3, Rotate90_1) {
                                7, 8, 9};
 
     image.setRawData(imageData, 3, 1, 3);
-    image.rotate90();
+    image.rotate90(false);
 
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
-TEST(ImageJPEG3, Rotate90_2) {
+TEST(ImageJPEG3, Rotate90_1Fast) {
+    Image image(3);
+    unsigned char *imageData = new unsigned char[9]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    int imageDataExpected[] = {1, 2, 3,
+                               4, 5, 6,
+                               7, 8, 9};
+
+    image.setRawData(imageData, 3, 1, 3);
+    image.rotate90(true);
+    imageData = image.getImageData().data;
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(ImageJPEG3, Rotate90_2Slow) {
     Image image(3);
     unsigned char *imageData = new unsigned char[6*3]{11, 12, 13, 21, 22, 23, 31, 32, 33,
                                                       41, 42, 43, 51, 52, 53, 61, 62, 63};
@@ -124,14 +139,31 @@ TEST(ImageJPEG3, Rotate90_2) {
                                          61, 62, 63, 31, 32, 33};
 
     image.setRawData(imageData, 3, 2, 3);
-    image.rotate90();
+    image.rotate90(false);
 
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
-TEST(ImageJPEG3, Rotate90_3) {
+TEST(ImageJPEG3, Rotate90_2Fast) {
+    Image image(3);
+    unsigned char *imageData = new unsigned char[6*3]{11, 12, 13, 21, 22, 23, 31, 32, 33,
+                                                      41, 42, 43, 51, 52, 53, 61, 62, 63};
+
+    unsigned char imageDataExpected[] = {41, 42, 43, 11, 12, 13,
+                                         51, 52, 53, 21, 22, 23,
+                                         61, 62, 63, 31, 32, 33};
+
+    image.setRawData(imageData, 3, 2, 3);
+    image.rotate90(true);
+    imageData = image.getImageData().data;
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(ImageJPEG3, Rotate90_3Slow) {
     Image image(3);
     unsigned char *imageData = new unsigned char[36]{11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43,
                                                      51, 52, 53, 61, 62, 63, 71, 72, 73, 81, 82, 83,
@@ -143,8 +175,27 @@ TEST(ImageJPEG3, Rotate90_3) {
                                          121, 122, 123, 81, 82, 83, 41, 42, 43};
 
     image.setRawData(imageData, 4, 3, 3);
-    image.rotate90();
+    image.rotate90(false);
 
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], imageData[i]);
+    }
+}
+
+TEST(ImageJPEG3, Rotate90_3Fast) {
+    Image image(3);
+    unsigned char *imageData = new unsigned char[36]{11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43,
+                                                     51, 52, 53, 61, 62, 63, 71, 72, 73, 81, 82, 83,
+                                                     91, 92, 93, 101, 102, 103, 111, 112, 113, 121, 122, 123};
+
+    unsigned char imageDataExpected[] = {91, 92, 93, 51, 52, 53, 11, 12, 13,
+                                         101, 102, 103, 61, 62, 63, 21, 22, 23,
+                                         111, 112, 113, 71, 72, 73, 31, 32, 33,
+                                         121, 122, 123, 81, 82, 83, 41, 42, 43};
+
+    image.setRawData(imageData, 4, 3, 3);
+    image.rotate90(true);
+    imageData = image.getImageData().data;
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
