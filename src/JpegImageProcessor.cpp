@@ -97,7 +97,7 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
     int result = NO_ERR;
 
     ImageMetaData metaData;
-    unsigned char  * data;
+    unsigned char *data;
     metaData.imageWidth = cinfo.image_width;
     metaData.imageHeight = cinfo.image_height;
     metaData.componentSize = cinfo.num_components;
