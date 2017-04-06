@@ -5,6 +5,7 @@
 #ifndef NATIVEIMAGEAPP_ASSETS_H_H
 #define NATIVEIMAGEAPP_ASSETS_H_H
 
+#define TEST_ASSET(filepath) "../test/" filepath
 
 #define JPEG_1X1_PX TEST_ASSET("assets/red.jpg")
 #define JPEG_3X1_PX TEST_ASSET("assets/3pixels.jpg")

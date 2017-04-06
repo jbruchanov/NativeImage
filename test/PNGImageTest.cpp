@@ -5,8 +5,8 @@
 #include <googletest/include/gtest/gtest.h>
 #include "../src/PNGImage.hpp"
 #include "../src/Errors.h"
-#include "TestHelper.h"
 #include "jerror.h"
+#include "Assets.h"
 
 #define PNG_1X1_PX TEST_ASSET("assets/red.png")
 //#define JPEG_3X1_PX TEST_ASSET("assets/3pixels.jpg")
