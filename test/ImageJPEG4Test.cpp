@@ -176,7 +176,7 @@ TEST(ImageJPEG4, Rotate90_2Fast) {
                                          61, 62, 63, 64, 31, 32, 33, 34};
 
     image.setRawData(imageData, 3, 2, 4);
-    image.rotate90();
+    image.rotate90(true);
     imageData = image.getImageData().data;
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
@@ -196,7 +196,7 @@ TEST(ImageJPEG4, Rotate90_3Slow) {
                                          121, 122, 123, 124, 81, 82, 83, 84, 41, 42, 43, 44};
 
     image.setRawData(imageData, 4, 3, 4);
-    image.rotate90();
+    image.rotate90(false);
 
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
@@ -216,7 +216,7 @@ TEST(ImageJPEG4, Rotate90_3Fast) {
                                          121, 122, 123, 124, 81, 82, 83, 84, 41, 42, 43, 44};
 
     image.setRawData(imageData, 4, 3, 4);
-    image.rotate90();
+    image.rotate90(true);
 
     imageData = image.getImageData().data;
     for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
