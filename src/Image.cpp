@@ -7,6 +7,8 @@
 #include "Image.hpp"
 #include "Errors.h"
 
+#define CHAR_SIZE sizeof(unsigned char)
+
 using namespace json11;
 
 Image::Image(int componentsPerPixel) {
@@ -106,7 +108,7 @@ void Image::rotate90(bool fast) {
             } while (next > start);
 
             if (next >= start && i != 1) {
-               /* following code doesn't make it singificantly faster for 4bytes
+               /* following code doesn't make it significantly faster for 4bytes
                 * const int tmp = ((int *) mImageData)[start];
                     next = start;
                     do {
@@ -116,14 +118,14 @@ void Image::rotate90(bool fast) {
                     } while (next > start);
                 */
                 memcpy(&rgbTmp, mImageData + (start * mComponentsPerPixel),
-                       mComponentsPerPixel * sizeof(unsigned char));
+                       mComponentsPerPixel * CHAR_SIZE);
                 next = start;
                 do {
                     i = (next % h) * w + next / h;
                     //((int *) mRawData)[next] = (i == start) ? tmp : ((int *) mRawData)[i];
                     if (i == start) {
                         int realOffset = (next * mComponentsPerPixel);
-                        memcpy(mImageData + realOffset, &rgbTmp, mComponentsPerPixel * sizeof(unsigned char));
+                        memcpy(mImageData + realOffset, &rgbTmp, mComponentsPerPixel * CHAR_SIZE);
                     } else {
                         copy(i, next);
                     }
