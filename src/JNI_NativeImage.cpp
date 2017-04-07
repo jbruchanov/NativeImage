@@ -147,8 +147,7 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1getM
 
     Json result = Json::object {
             {"imageWidth",    metaData.imageWidth},
-            {"imageHeight",   metaData.imageHeight},
-            {"componentSize", metaData.componentSize}};
+            {"imageHeight",   metaData.imageHeight}};
 
     string json = result.dump();
     return (*env).NewStringUTF(json.c_str());
@@ -171,8 +170,7 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1dispose
  * Signature: (Ljava/lang/Object;)I
  */
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixels
-        (JNIEnv *env, jobject obj, jobject bitmap) {
-
+        (JNIEnv *env, jobject obj, jobject bitmap, jint offsetX, jint offsetY, jint width, jint height) {
     AndroidBitmapInfo info;
     int v;
     v = AndroidBitmap_getInfo(env, bitmap, &info);
@@ -182,9 +180,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
 
     Image *image = getObject(env, obj);
     ImageMetaData metaData = image->getMetaData();
-    if (metaData.pixelCount() != (info.height * info.width)) {
-        LOGE("Invalid resolution loadedImage:%dx%d vs bitmap:%dx%d", metaData.imageWidth, metaData.imageHeight, info.width, info.height);
-        return NOT_SAME_RESOLUTION;
+    if ((width * height) != (info.height * info.width)) {
+        return INVALID_RESOLUTION;
+    }
+    if ((offsetX + width) > metaData.imageWidth || (offsetY + height) > metaData.imageHeight) {
+        return INVALID_RESOLUTION;
     }
 
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
@@ -198,7 +198,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
         return v;
     }
 
-    image->setPixels(ptr, 4);
+    image->setPixels(ptr, 4, (int)offsetX, (int)offsetY, (int)width, (int)height);
 
     v = AndroidBitmap_unlockPixels(env, bitmap);
     if(v != ANDROID_BITMAP_RESULT_SUCCESS) {

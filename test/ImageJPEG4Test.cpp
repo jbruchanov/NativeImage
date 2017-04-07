@@ -238,3 +238,45 @@ TEST(ImageJPEG4, SaveImage) {
     ASSERT_EQ(image.getMetaData().imageHeight, metaData.imageHeight);
     remove(path);
 }
+
+TEST(ImageJPEG4, SetPixelsCrop) {
+    Image image(4);
+    unsigned char *imageData = new unsigned char[48]
+            {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24, 0x31, 0x32, 0x33, 0x34, 0x41, 0x42, 0x43, 0x44,
+             0x51, 0x52, 0x53, 0x54, 0x61, 0x62, 0x63, 0x64, 0x71, 0x72, 0x73, 0x74, 0x81, 0x82, 0x83, 0x84,
+             0x91, 0x92, 0x93, 0x94, 0xA1, 0xA2, 0xA3, 0xA4, 0xB1, 0xB2, 0xB3, 0xB4, 0xC1, 0xC2, 0xC3, 0xC4};
+
+    image.setRawData(imageData, 4, 3, 4);
+
+    int target[4];
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 0, 0, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0x11121314), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 1, 1, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0x61626364), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 2, 2, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 2, 2, 2, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[1]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 3, 0, 1, 3);
+    ASSERT_EQ(BITMAP_COLOR(0x41424344), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0x81828384), target[1]);
+    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[2]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 0, 2, 4, 1);
+    ASSERT_EQ(BITMAP_COLOR(0x91929394), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xA1A2A3A4), target[1]);
+    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[2]);
+    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[3]);
+}

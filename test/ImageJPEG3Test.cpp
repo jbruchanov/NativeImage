@@ -8,6 +8,7 @@
 #include "../src/Image.hpp"
 #include "../src/JpegImageProcessor.h"
 #include "Assets.h"
+#include "../src/Debug.h"
 
 static JpegImageProcessor prc;
 
@@ -215,4 +216,50 @@ TEST(ImageJPEG3, SaveImage) {
     ASSERT_EQ(image.getMetaData().imageWidth, metaData.imageWidth);
     ASSERT_EQ(image.getMetaData().imageHeight, metaData.imageHeight);
     remove(path);
+}
+
+TEST(ImageJPEG3, SetPixelsCrop) {
+    Image image(3);
+    unsigned char *imageData = new unsigned char[6 * 3]{0x11, 0x12, 0x13, 0x21, 0x22, 0x23, 0x31, 0x32, 0x33,
+                                                        0x41, 0x42, 0x43, 0x51, 0x52, 0x53, 0x61, 0x62, 0x63};
+
+    image.setRawData(imageData, 3, 2, 3);
+    int target[4];
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 0, 0, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF111213), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 1, 1, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF515253), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 2, 0, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF313233), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 2, 1, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF616263), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 0, 0, 1, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF111213), target[0]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 1, 0, 2, 2);
+    ASSERT_EQ(BITMAP_COLOR(0xFF212223), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF313233), target[1]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF515253), target[2]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF616263), target[3]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 1, 0, 2, 1);
+    ASSERT_EQ(BITMAP_COLOR(0xFF212223), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF313233), target[1]);
+
+    memset(target, 0, sizeof(target));
+    image.setPixels((int *) &target, 4, 1, 0, 1, 2);
+    ASSERT_EQ(BITMAP_COLOR(0xFF212223), target[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF515253), target[1]);
 }

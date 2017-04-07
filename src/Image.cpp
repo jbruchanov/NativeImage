@@ -43,19 +43,29 @@ ImageData Image::getImageData() {
 }
 
 void Image::setPixels(int *target, int targetComponentsPerPixel) {
+    this->setPixels(target, targetComponentsPerPixel, 0, 0, mMetaData.imageWidth, mMetaData.imageHeight);
+}
+
+void Image::setPixels(int* target, int targetComponentsPerPixel, int offsetX, int offsetY, int width, int height) {
     if (mImageData != NULL && target != NULL) {
         ImageData data = getImageData();
-        if (mComponentsPerPixel == targetComponentsPerPixel) {
+        bool isFullImage = offsetX == 0 && offsetY == 0 && mMetaData.imageWidth == width && mMetaData.imageHeight == height;
+        if (isFullImage && mComponentsPerPixel == targetComponentsPerPixel) {
             memcpy(target, data.data, (size_t) (data.metaData.pixelCount() * mComponentsPerPixel));
-        } else if (mComponentsPerPixel == RGB && targetComponentsPerPixel == RGBA) {
-            unsigned char a, b, c;
+        } else /*if (mComponentsPerPixel == RGB && targetComponentsPerPixel == RGBA) */{
+            int i = 0;
+            unsigned char a, b, c, z;
             unsigned char *rawData = mImageData;
-            for (int i = 0, l = mMetaData.pixelCount(); i < l; i++) {
-                int startIndex = i * mComponentsPerPixel;
-                a = rawData[startIndex];
-                b = rawData[++startIndex];
-                c = rawData[++startIndex];
-                target[i] = 0xFF000000 | a << 0 | b << 8 | c << 16;
+            for (int y = offsetY; y < (offsetY + height); y++) {
+                for (int x = offsetX; x < (offsetX + width); x++) {
+                    int startIndex = (y * mMetaData.imageWidth + x) * mComponentsPerPixel;
+                    z = (mComponentsPerPixel == RGB ? (unsigned char)0xFF : rawData[startIndex++]);
+                    a = rawData[startIndex++];
+                    b = rawData[startIndex++];
+                    c = rawData[startIndex];
+                    target[i] = z << 24 | a << 0 | b << 8 | c << 16;
+                    i++;
+                }
             }
         }
     }

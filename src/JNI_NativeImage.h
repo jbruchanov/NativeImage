@@ -50,10 +50,10 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1dispose
 /*
  * Class:     com_scurab_andriod_nativeimage_NativeImage
  * Method:    _setPixels
- * Signature: (Ljava/lang/Object;)I
+ * Signature: (Ljava/lang/Object;IIII)I
  */
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixels
-        (JNIEnv *, jobject, jobject);
+        (JNIEnv *, jobject, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     com_scurab_andriod_nativeimage_NativeImage

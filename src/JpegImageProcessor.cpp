@@ -100,7 +100,6 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
     unsigned char *data;
     metaData.imageWidth = cinfo.image_width;
     metaData.imageHeight = cinfo.image_height;
-    metaData.componentSize = cinfo.num_components;
     data = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
     if (data == 0) {
         fclose(infile);
