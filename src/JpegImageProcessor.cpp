@@ -5,7 +5,6 @@
 #include "JpegImageProcessor.h"
 #include <setjmp.h>
 #include <cstring>
-#include "stdio.h"
 #include "jpeglib.h"
 #include "Errors.h"
 #include "LogHelper.h"

@@ -6,8 +6,6 @@
 #include <cstring>
 #include "Image.hpp"
 #include "Errors.h"
-#include "cstring"
-#include "Debug.h"
 
 using namespace json11;
 
