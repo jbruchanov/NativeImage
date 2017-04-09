@@ -4,15 +4,17 @@
 #include <cstring>
 #include "ImageProcessor.hpp"
 #include "LogHelper.h"
+#include "Image.hpp"
 
 unsigned char *ImageProcessor::removeAlpha(unsigned char *data, int width, int height, int componentsPerPixel) {
-    if (data != nullptr && componentsPerPixel == 4) {
+    if (data != nullptr && componentsPerPixel == RGBA) {
         int newComponent = 3;
         long newLen = (long) width * height * newComponent;
-        for (int i = 0, l = (width * height) - 1; i < l; i++) {
-            long from = (long) (i) * componentsPerPixel;
-            long to = (long) i * newComponent;
-            memcpy(&data[to], &data[from + 1/*no Alpha*/], (size_t) newComponent);
+        for (int isrc = 0, idst = 0, n = width * height * RGBA; isrc < n; /*isrc++, idst++*/) {
+            isrc++;//alpha
+            data[idst++] = data[isrc++];//R
+            data[idst++] = data[isrc++];//G
+            data[idst++] = data[isrc++];//B => increment here for-i doesn't increment at all
         }
         void *newPtr = realloc(data, (size_t) newLen);
         if (newPtr == nullptr) {

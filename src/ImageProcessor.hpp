@@ -32,6 +32,14 @@ class ImageProcessor {
 public:
     virtual IOResult loadImage(const char *path, int componentsPerPixel, char *err) = 0;
     virtual int saveImage(const char* path, InputData &data) = 0;
+    /**
+     * Remove alpha channel from data
+     * @param data
+     * @param width
+     * @param height
+     * @param componentsPerPixel (actual bytes/Px must be 4, otherwise nothing)
+     * @return new pointer for data (as it's data shrinking, it should be same (not guaranteed))
+     */
     static unsigned char* removeAlpha(unsigned char *data, int width, int height, int componentsPerPixel);
 };
 

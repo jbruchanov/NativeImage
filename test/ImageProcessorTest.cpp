@@ -18,3 +18,21 @@ TEST(PNGImage, ImageRemoveAlphaChannel) {
         ASSERT_EQ(imageDataExpected[i], newData[i]);
     }
 }
+
+TEST(PNGImage, ImageRemoveAlphaChannel2) {
+    unsigned char *imageData = new unsigned char[24]
+            {0x80, 0xFF, 0x00, 0x00,
+             0x80, 0x00, 0xFF, 0x00,
+             0x80, 0x00, 0x00, 0xFF};
+
+
+
+    unsigned char imageDataExpected[] = {0xFF, 0x00, 0x00,
+                                         0x00, 0xFF, 0x00,
+                                         0x00, 0x00, 0xFF};
+
+    unsigned char* newData = ImageProcessor::removeAlpha(imageData, 3, 1, 4);
+    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+        ASSERT_EQ(imageDataExpected[i], newData[i]);
+    }
+}
