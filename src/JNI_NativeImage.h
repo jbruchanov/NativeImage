@@ -63,6 +63,14 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
 JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
 (JNIEnv *, jobject, jint, jboolean);
 
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _applyEffect
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1applyEffect
+        (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

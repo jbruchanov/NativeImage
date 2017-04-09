@@ -13,6 +13,7 @@
 #include "Errors.h"
 #include "JNIHelper.h"
 #include "JpegImageProcessor.h"
+#include "Effect.h"
 #include "PNGImageProcessor.hpp"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
@@ -113,7 +114,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1saveIma
         saveArgs = Json::parse(json, err);
         env->ReleaseStringUTFChars(jsonArgs, json);
         if (err.length() > 0) {
-            return INVALID_JSON;
+            return (jint)INVALID_JSON;
         }
     }
     Image *image = getObject(env, obj);
@@ -175,27 +176,27 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
     int v;
     v = AndroidBitmap_getInfo(env, bitmap, &info);
     if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        return v;
+        return (jint)v;
     }
 
     Image *image = getObject(env, obj);
     ImageMetaData metaData = image->getMetaData();
     if ((width * height) != (info.height * info.width)) {
-        return INVALID_RESOLUTION;
+        return (jint)INVALID_RESOLUTION;
     }
     if ((offsetX + width) > metaData.imageWidth || (offsetY + height) > metaData.imageHeight) {
-        return INVALID_RESOLUTION;
+        return (jint)INVALID_RESOLUTION;
     }
 
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("Invalid bitmap format, expected RGBA_8888 was:%d (<android/Bitmap.h>@AndroidBitmapFormat)", info.format);
-        return INVALID_BITMAP_FORMAT;
+        return (jint)INVALID_BITMAP_FORMAT;
     }
 
     int *ptr;
     v = AndroidBitmap_lockPixels(env, bitmap, (void **) &ptr);
     if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        return v;
+        return (jint)v;
     }
 
     image->setPixels(ptr, 4, (int)offsetX, (int)offsetY, (int)width, (int)height);
@@ -233,4 +234,43 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
             //do nothing JAVA will throw the exception before
             break;
     }
+}
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _applyEffect
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1applyEffect
+        (JNIEnv *env, jobject obj, jstring jsonArgs) {
+    if (jsonArgs == nullptr) {
+        return (jint)INVALID_JSON;
+    }
+
+    Json saveArgs = nullptr;
+    string err;
+    const char *json = env->GetStringUTFChars(jsonArgs, 0);
+    saveArgs = Json::parse(json, err);
+    env->ReleaseStringUTFChars(jsonArgs, json);
+    if (err.length() > 0) {
+        return (jint)INVALID_JSON;
+    }
+
+    Image *image = getObject(env, obj);
+    const ImageData imageData = image->getImageData();
+
+    if (saveArgs.is_object()) {
+        json11::Json quality = saveArgs["effect"];
+        if (quality.is_string()) {
+            EffectFunction eff = Effect::get(quality.string_value());
+            if (eff != nullptr) {
+                eff(imageData.data, imageData.metaData.imageWidth, imageData.metaData.imageHeight,
+                    image->getComponentsPerPixel(), &saveArgs);
+                return (jint) NO_ERR;
+            } else {
+                return (jint) ERR_EFFECT_NOT_DEFINED;
+            }
+        }
+    }
+    return (jint) INVALID_JSON;
 }
