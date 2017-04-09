@@ -5,7 +5,6 @@
 #include "PNGImageProcessor.hpp"
 #include "LogHelper.h"
 #include "Errors.h"
-#include "Debug.h"
 #include <png.h>
 
 IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, char *err) {
@@ -30,7 +29,7 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     if (png_sig_cmp(header, 0, 8)) {
         LOGE("[read_png_file] File %s is not recognized as a PNG file", path);
         fclose(infile);
-        return INVALID_PNG
+        return INVALID_PNG;
     }
 
     /* initialize stuff */
