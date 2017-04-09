@@ -88,3 +88,15 @@ TEST(PNGImage, LoadingImage3Large_RGB) {
     offset = 60;//Pixel@[3,3]
     ASSERT_EQ(BITMAP_COLOR(0xFFF236C2), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
 }
+
+TEST(PNGImage, SaveImage_RGB) {
+    string file = PNG_4x4RGB_ASSET;
+    Image image(3);
+    PNGImageProcessor prc;
+    IOResult ior = image.loadImage(&prc, file.c_str());
+    ASSERT_EQ(NO_ERR, ior.result);
+    const char *path = "pokus.png";
+    int result = image.saveImage(&prc, path);
+    ASSERT_EQ(NO_ERR, result);
+    remove(path);
+}

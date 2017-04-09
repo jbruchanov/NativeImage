@@ -8,6 +8,8 @@
 #ifndef NATIVEIMAGEAPP_PNGIMAGE_H
 #define NATIVEIMAGEAPP_PNGIMAGE_H
 
+#define BIT_DEPTH 8
+
 
 class PNGImageProcessor : public ImageProcessor {
 public:
