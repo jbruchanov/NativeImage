@@ -43,7 +43,6 @@ TEST(PNGImage, LoadingImage3_RGBA) {
     IOResult ior = image.loadImage(&prc, file.c_str());
     ASSERT_EQ(NO_ERR, ior.result);
     unsigned char *data = ior.data;
-    Debug::printTable("X", data, 9, 3, 3);
 
     ASSERT_EQ(BITMAP_COLOR(0xFF0000),  data[0] << 16 | data[1] << 8 | data[2]);
     ASSERT_EQ(BITMAP_COLOR(0x00FF00),  data[3] << 16 | data[4] << 8 | data[5]);
@@ -70,7 +69,6 @@ TEST(PNGImage, LoadingImage3Large_RGB) {
     ASSERT_EQ(NO_ERR, ior.result);
     unsigned char *data = ior.data;
 
-    Debug::printTable("X", data, 4 * 4 * 3, 4, 3);
     int offset = 0;
     ASSERT_EQ(BITMAP_COLOR(0xFF6D8920), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
     offset += 4;

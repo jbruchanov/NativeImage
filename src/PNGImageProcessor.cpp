@@ -120,9 +120,7 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     png_read_image(png_ptr, (png_bytepp) &row_pointers);
 
     if (removeAlpha) {
-        Debug::printTable("A1", data, 12, 3, 4);
         data = ImageProcessor::removeAlpha(data, (int) width, (int) height, RGBA);
-        Debug::printTable("A2", data, 9, 3, 3);
     } else if (createAlpha) {
         addAlpha(data, (int) width, (int) height);
     }
