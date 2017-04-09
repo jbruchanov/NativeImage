@@ -11,7 +11,7 @@ public:
     static void printTable(const char *prefix, unsigned char *table, int stride, int imWidth, int components);
 
 private:
-    Debug();
+    Debug(){};
 };
 
 
