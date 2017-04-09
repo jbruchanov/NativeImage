@@ -13,6 +13,7 @@
 #include "Errors.h"
 #include "JNIHelper.h"
 #include "JpegImageProcessor.h"
+#include "PNGImageProcessor.hpp"
 
 #define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
 #define METHOD_SET_NATIVE_REF "onSetNativeRef"
@@ -38,10 +39,9 @@ ImageProcessor* getImageProcessor(int value) {
     switch (value) {
         case 1:
             return new JpegImageProcessor();
-//        case 2:
-//            break;
-//        case 3:
-//            break;
+        case 2:
+        case 3:
+            return new PNGImageProcessor();
     }
 }
 
