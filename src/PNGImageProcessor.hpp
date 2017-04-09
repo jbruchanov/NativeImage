@@ -13,6 +13,15 @@ class PNGImageProcessor : public ImageProcessor {
 public:
     virtual IOResult loadImage(const char *path, int componentsPerPixel, char *err);
     virtual int saveImage(const char* path, InputData &inputData);
+    /**
+     * Move pixels in data for proper RGBA (data size and filling must be already prepared)
+     * this is just copying pixels!
+     * @param data
+     * @param width
+     * @param height
+     * @return
+     */
+    static void addAlpha(unsigned char *data, int width, int height);
 };
 
 

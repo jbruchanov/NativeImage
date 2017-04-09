@@ -86,6 +86,7 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     }
 
     bool removeAlpha = componentsPerPixel == RGB && color_type == PNG_COLOR_TYPE_RGBA;
+    bool createAlpha = componentsPerPixel == RGBA && color_type == PNG_COLOR_TYPE_RGB;
     if (removeAlpha) {
         //seems i have to convert it by myself => load it as RGBA and then remove alpha channel
         componentsPerPixel = RGBA;
@@ -118,7 +119,11 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     png_read_image(png_ptr, (png_bytepp) &row_pointers);
 
     if (removeAlpha) {
-        data = ImageProcessor::removeAlpha(data, (int) width, (int) height, 4);
+        Debug::printTable("A1", data, 12, 3, 4);
+        data = ImageProcessor::removeAlpha(data, (int) width, (int) height, RGBA);
+        Debug::printTable("A2", data, 9, 3, 3);
+    } else if (createAlpha) {
+        addAlpha(data, (int) width, (int) height);
     }
 
     IOResult ior;
@@ -129,6 +134,17 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     return ior;
 }
 
+
+
 int PNGImageProcessor::saveImage(const char *path, InputData &inputData) {
     return 0;
+}
+
+void PNGImageProcessor::addAlpha(unsigned char *data, int width, int height) {
+    for (int i4 = (width * height * RGBA) - 1, i3 = (width * height * RGB) - 1; i4 >= 0 && i3 >= 0; i4--, i3--) {
+        data[i4] = data[i3];
+        data[--i4] = data[--i3];
+        data[--i4] = data[--i3];
+        data[--i4] = (unsigned char)0xFF;
+    }
 }
