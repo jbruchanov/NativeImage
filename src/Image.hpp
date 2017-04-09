@@ -12,7 +12,7 @@
 
 #include <string>
 #include "ImageMetaData.h"
-#include "ImageProcessor.h"
+#include "ImageProcessor.hpp"
 
 class Image {
 
@@ -45,7 +45,6 @@ public:
     void rotate90(bool fast);
     void rotate180();
 
-    void removeAlpha();
     int getComponentsPerPixel();
 };
 

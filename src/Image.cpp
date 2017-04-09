@@ -235,27 +235,6 @@ int Image::saveImage(ImageProcessor *processor, const char *path) {
     return this->saveImage(processor, path, nullptr);
 }
 
-void Image::removeAlpha() {
-    if (mImageData != nullptr && mComponentsPerPixel == 4) {
-        int newComponent = 3;
-        long newLen = (long)mMetaData.imageWidth * mMetaData.imageHeight * newComponent;
-        for (int i = 0, l = (mMetaData.imageWidth * mMetaData.imageHeight) - 1; i < l; i++) {
-            long from = (long)(i) * mComponentsPerPixel;
-            long to = (long)i * newComponent;
-            memcpy(&mImageData[to], &mImageData[from + 1/*no Alpha*/], (size_t) newComponent);
-        }
-        mComponentsPerPixel = newComponent;
-        void *newPtr = realloc(mImageData, (size_t) newLen);
-        if (newPtr == nullptr) {
-            LOGE("RemoveAlpha", "Unable to realloc!, data has been updated, but array size kept same!");
-        } else {
-            //i would expect that pointer will be same, as it's shrinking, so no need for changing,
-            //but docs seem to be saying that it's not guaranteed
-            mImageData = (unsigned char *) newPtr;
-        }
-    }
-}
-
 int Image::getComponentsPerPixel() {
     return mComponentsPerPixel;
 }
