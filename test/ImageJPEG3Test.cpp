@@ -4,7 +4,7 @@
 
 #include <googletest/include/gtest/gtest.h>
 #include "../src/Errors.h"
-#include "../src/ImageProcessor.h"
+#include "../src/ImageProcessor.hpp"
 #include "../src/Image.hpp"
 #include "../src/JpegImageProcessor.h"
 #include "Assets.h"

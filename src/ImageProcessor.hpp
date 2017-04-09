@@ -32,6 +32,7 @@ class ImageProcessor {
 public:
     virtual IOResult loadImage(const char *path, int componentsPerPixel, char *err) = 0;
     virtual int saveImage(const char* path, InputData &data) = 0;
+    static unsigned char* removeAlpha(unsigned char *data, int width, int height, int componentsPerPixel);
 };
 
 #endif //NATIVEIMAGEAPP_IMAGEPROCESSOR_H

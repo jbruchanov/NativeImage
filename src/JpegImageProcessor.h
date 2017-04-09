@@ -1,7 +1,7 @@
 //
 // Created by scurab on 04/04/17.
 //
-#include "ImageProcessor.h"
+#include "ImageProcessor.hpp"
 
 #ifndef NATIVEIMAGEAPP_JPEGIMAGEPROCESSOR_H
 #define NATIVEIMAGEAPP_JPEGIMAGEPROCESSOR_H

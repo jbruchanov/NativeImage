@@ -5,7 +5,7 @@
 #include <googletest/include/gtest/gtest.h>
 #include "../../src/SimpleClass.h"
 #include "../../json11/json11.hpp"
-#include "../../src/ImageProcessor.h"
+#include "../../src/ImageProcessor.hpp"
 #include "../../src/JpegImageProcessor.h"
 #include "../../src/Image.hpp"
 #include "../Assets.h"
