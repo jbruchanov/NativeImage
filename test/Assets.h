@@ -13,4 +13,10 @@
 #define JPEG_SAMPLE_ASSET TEST_ASSET("assets/test.jpg")
 #define JPEG_SAMPLE4_ASSET TEST_ASSET("assets/pixels4x4.jpg")
 
+
+#define PNG_1X1_PX TEST_ASSET("assets/red.png")
+#define PNG_3X1RGB_PX TEST_ASSET("assets/3x1RGB.png")
+#define PNG_3X1RGBA_PX TEST_ASSET("assets/3x1RGBA.png")
+#define PNG_4x4RGB_ASSET TEST_ASSET("assets/pixels4x4RGB.png")
+
 #endif //NATIVEIMAGEAPP_ASSETS_H_H
