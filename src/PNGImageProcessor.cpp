@@ -85,6 +85,12 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
         return ERR_UNKNOWN;
     }
 
+    bool removeAlpha = componentsPerPixel == RGB && color_type == PNG_COLOR_TYPE_RGBA;
+    if (removeAlpha) {
+        //seems i have to convert it by myself => load it as RGBA and then remove alpha channel
+        componentsPerPixel = RGBA;
+    }
+
     ImageMetaData metaData;
     unsigned char *data;
     metaData.imageWidth = (int) width;
@@ -110,6 +116,10 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
 
     //read image
     png_read_image(png_ptr, (png_bytepp) &row_pointers);
+
+    if (removeAlpha) {
+        data = ImageProcessor::removeAlpha(data, (int) width, (int) height, 4);
+    }
 
     IOResult ior;
     ior.data = data;
