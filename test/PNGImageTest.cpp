@@ -3,21 +3,47 @@
 //
 
 #include <googletest/include/gtest/gtest.h>
-#include "../src/PNGImage.hpp"
+#include "../src/PNGImageProcessor.hpp"
 #include "../src/Errors.h"
-#include "jerror.h"
 #include "Assets.h"
 
-#define PNG_1X1_PX TEST_ASSET("assets/red.png")
-//#define JPEG_3X1_PX TEST_ASSET("assets/3pixels.jpg")
-//#define JPEG_INVALID TEST_ASSET("assets/invalid.jpg")
-//#define JPEG_SAMPLE_ASSET TEST_ASSET("assets/test.jpg")
 
+TEST(PNGImage, LoadingImage3_RGB) {
+    string file = PNG_4x4RGB_ASSET;
+    Image image(3);
+    PNGImageProcessor prc;
+    IOResult ior = image.loadImage(&prc, file.c_str());
+    ASSERT_EQ(NO_ERR, ior.result);
+    unsigned char *data = ior.data;
 
-TEST(PNGImage, LoadingImage) {
-    string file = PNG_1X1_PX;
-    PNGImage image(4);
-    int v = image.loadImage(file.c_str());
-    ASSERT_EQ(NO_ERR, v);
+    ASSERT_EQ(BITMAP_COLOR(0x6D8920), data[0] << 16 | data[1] << 8 | data[2]);
+    ASSERT_EQ(BITMAP_COLOR(0xE66A51), data[15] << 16 | data[16] << 8 | data[17]);
+    ASSERT_EQ(BITMAP_COLOR(0x603243), data[30] << 16 | data[31] << 8 | data[32]);
+    ASSERT_EQ(BITMAP_COLOR(0xF236C2), data[45] << 16 | data[46] << 8 | data[47]);
 }
 
+TEST(PNGImage, LoadingImage4_RGBA) {
+    string file = PNG_3X1RGBA_PX;
+    Image image(4);
+    PNGImageProcessor prc;
+    IOResult ior = image.loadImage(&prc, file.c_str());
+    ASSERT_EQ(NO_ERR, ior.result);
+    unsigned char *data = ior.data;
+
+    ASSERT_EQ(BITMAP_COLOR(0x80FF0000),  data[0] << 24 |  data[1] << 16 | data[2] << 8 | data[3]);
+    ASSERT_EQ(BITMAP_COLOR(0x8000FF00),  data[4] << 24 |  data[5] << 16 | data[6] << 8 | data[7]);
+    ASSERT_EQ(BITMAP_COLOR(0x800000FF),  data[8] << 24 |  data[9] << 16 | data[10] << 8 | data[11]);
+}
+
+//TEST(PNGImage, LoadingImage4_RGB) {
+//    string file = PNG_3X1RGB_PX;
+//    Image image(4);
+//    PNGImageProcessor prc;
+//    IOResult ior = image.loadImage(&prc, file.c_str());
+//    ASSERT_EQ(NO_ERR, ior.result);
+//    unsigned char *data = ior.data;
+//
+//    ASSERT_EQ(BITMAP_COLOR(0x80FF0000),  data[0] << 24 |  data[1] << 16 | data[2] << 8 | data[3]);
+//    ASSERT_EQ(BITMAP_COLOR(0x8000FF00),  data[4] << 24 |  data[5] << 16 | data[6] << 8 | data[7]);
+//    ASSERT_EQ(BITMAP_COLOR(0x800000FF),  data[8] << 24 |  data[9] << 16 | data[10] << 8 | data[11]);
+//}

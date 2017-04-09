@@ -2,14 +2,13 @@
 // Created by scurab on 01/04/17.
 //
 
-#include "PNGImage.hpp"
+#include "PNGImageProcessor.hpp"
 #include "LogHelper.h"
 #include "Errors.h"
+#include "Debug.h"
 #include <png.h>
 
-PNGImage::PNGImage(int componentsPerPixel) : Image(componentsPerPixel) {}
-
-int PNGImage::loadImage(const char *path) {
+IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, char *err) {
     png_byte header[8];    // 8 is the maximum size that can be checked
     int x, y;
 
@@ -20,7 +19,6 @@ int PNGImage::loadImage(const char *path) {
     png_structp png_ptr;
     png_infop info_ptr;
     int number_of_passes;
-    png_bytep * row_pointers;
 
     FILE *infile;
     if ((infile = fopen(path, "rb")) == NULL) {
@@ -31,6 +29,8 @@ int PNGImage::loadImage(const char *path) {
     fread(header, 1, 8, infile);
     if (png_sig_cmp(header, 0, 8)) {
         LOGE("[read_png_file] File %s is not recognized as a PNG file", path);
+        fclose(infile);
+        return INVALID_PNG
     }
 
     /* initialize stuff */
@@ -66,23 +66,59 @@ int PNGImage::loadImage(const char *path) {
     number_of_passes = png_set_interlace_handling(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
 
+    if (bit_depth != 8) {
+        fclose(infile);
+        LOGE("[read_png_file] Invalid bit_depth:%d expected:8", bit_depth);
+        return NOT_SUPPORTED_PNG_CONFIGURATION;
+    }
+
+    if (!(color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_RGBA)) {
+        fclose(infile);
+        LOGE("[read_png_file] Invalid color_type:%d expected:PNG_COLOR_TYPE_RGB or PNG_COLOR_TYPE_RGBA", color_type);
+        return NOT_SUPPORTED_PNG_CONFIGURATION;
+    }
 
     /* read file */
     if (setjmp(png_jmpbuf(png_ptr))) {
         LOGE("[read_png_file] Error during read_image");
+        fclose(infile);
         return ERR_UNKNOWN;
     }
 
-    row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+    ImageMetaData metaData;
+    unsigned char *data;
+    metaData.imageWidth = (int) width;
+    metaData.imageHeight = (int) height;
+    data = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
+    if (data == 0) {
+        fclose(infile);
+        return IOResult(OUT_OF_MEMORY);
+    }
+    memset(data, 0, (size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
+    png_bytep row_pointers[height];
     for (y = 0; y < height; y++) {
-        row_pointers[y] = (png_byte *) malloc(png_get_rowbytes(png_ptr, info_ptr));
+        row_pointers[y] = (data + (y * metaData.imageWidth * componentsPerPixel));
     }
 
-    png_read_image(png_ptr, row_pointers);
+    //switch rgb to bgr for android native
+    /* flip the RGB pixels to BGR (or RGBA to BGRA) */
+    if (color_type & PNG_COLOR_MASK_COLOR) {
+        png_set_bgr(png_ptr);
+    }
+    /* swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR) */
+    png_set_swap_alpha(png_ptr);
 
+    //read image
+    png_read_image(png_ptr, (png_bytepp) &row_pointers);
+
+    IOResult ior;
+    ior.data = data;
+    ior.metaData = metaData;
+    ior.result = NO_ERR;
     fclose(infile);
+    return ior;
 }
 
-int PNGImage::saveImage(const char *path, int quality) {
+int PNGImageProcessor::saveImage(const char *path, InputData &inputData) {
     return 0;
 }
