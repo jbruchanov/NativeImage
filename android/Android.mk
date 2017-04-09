@@ -16,8 +16,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 FILE_LIST := $(wildcard $(LOCAL_PATH)/../../src/*.cpp) $(wildcard $(LOCAL_PATH)/../../json11/*.cpp) 
 LOCAL_LDLIBS := -llog -ljnigraphics
-LOCAL_MODULE    := main
-LOCAL_SHARED_LIBRARIES := libjpeg_shared libturbojpeg_shared libpng_shared
+LOCAL_CFLAGS := -DDEBUG
+LOCAL_MODULE := nimage
+LOCAL_SHARED_LIBRARIES := libjpeg_static libturbojpeg_static libpng_static
 LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%)
 
 include $(BUILD_SHARED_LIBRARY)

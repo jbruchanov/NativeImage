@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(NativeImageApp)
 
-add_definitions(-DDESKTOP)
+add_definitions(-DDESKTOP -DDEBUG)
 
 set(GOOGLE_TEST_SOURCE lib/googletest)
 include_directories(
