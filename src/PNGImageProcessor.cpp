@@ -103,8 +103,9 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     }
     memset(data, 0, (size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
     png_bytep row_pointers[height];
+    int rowPointersComponents = createAlpha ? RGB : componentsPerPixel;
     for (y = 0; y < height; y++) {
-        row_pointers[y] = (data + (y * metaData.imageWidth * componentsPerPixel));
+        row_pointers[y] = (data + (y * metaData.imageWidth * rowPointersComponents));
     }
 
     //switch rgb to bgr for android native
