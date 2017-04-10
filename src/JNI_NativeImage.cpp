@@ -247,26 +247,23 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1applyEf
         return (jint)INVALID_JSON;
     }
 
-    Json saveArgs = nullptr;
+    Json effArgs = nullptr;
     string err;
     const char *json = env->GetStringUTFChars(jsonArgs, 0);
-    saveArgs = Json::parse(json, err);
+    effArgs = Json::parse(json, err);
     env->ReleaseStringUTFChars(jsonArgs, json);
     if (err.length() > 0) {
         return (jint)INVALID_JSON;
     }
 
     Image *image = getObject(env, obj);
-    const ImageData imageData = image->getImageData();
 
-    if (saveArgs.is_object()) {
-        json11::Json quality = saveArgs["effect"];
+    if (effArgs.is_object()) {
+        json11::Json quality = effArgs["effect"];
         if (quality.is_string()) {
             EffectFunction eff = Effect::get(quality.string_value());
             if (eff != nullptr) {
-                eff(imageData.data, imageData.metaData.imageWidth, imageData.metaData.imageHeight,
-                    image->getComponentsPerPixel(), &saveArgs);
-                return (jint) NO_ERR;
+                return (jint)image->applyFilter(eff, effArgs);
             } else {
                 return (jint) ERR_EFFECT_NOT_DEFINED;
             }

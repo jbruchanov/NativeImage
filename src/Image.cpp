@@ -238,3 +238,14 @@ int Image::saveImage(ImageProcessor *processor, const char *path) {
 int Image::getComponentsPerPixel() {
     return mComponentsPerPixel;
 }
+
+int Image::applyFilter(EffectFunction &eff, Json &args) {
+    const EffectResult er = eff(mImageData, mMetaData.imageWidth, mMetaData.imageHeight,
+                                    mComponentsPerPixel, &args);
+    if (NO_ERR == er.result) {
+        mImageData = er.data;
+        mMetaData = er.metaData;
+        mComponentsPerPixel = er.componentsPerPixel;
+    }
+    return er.result;
+}

@@ -13,6 +13,7 @@
 #include <string>
 #include "ImageMetaData.h"
 #include "ImageProcessor.hpp"
+#include "Effect.h"
 
 class Image {
 
@@ -46,6 +47,8 @@ public:
     void rotate180();
 
     int getComponentsPerPixel();
+
+    int applyFilter(EffectFunction &eff, Json &args);
 };
 
 

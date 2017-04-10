@@ -4,8 +4,9 @@
 
 #include "Effect.h"
 #include "Image.hpp"
+#include "Errors.h"
 
-void grayScale(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult grayScale(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     unsigned char v;
     for (int i = 0, l = width * height * componentsPerPixel; i < l; i += componentsPerPixel) {
         if (componentsPerPixel == RGBA) {
@@ -17,6 +18,7 @@ void grayScale(unsigned char *data, int width, int height, int componentsPerPixe
             i--;
         }
     }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
 void init(map<string, EffectFunction> *pMap) {
