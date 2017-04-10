@@ -10,6 +10,7 @@
 #define EFF_BRIGHTNESS "brightness"
 #define EFF_CONTRAST "contrast"
 #define EFF_GAMMA "gamma"
+#define EFF_INVERSE "inverse"
 
 #include <map>
 #include "string"

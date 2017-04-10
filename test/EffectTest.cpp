@@ -31,10 +31,10 @@ TEST(PNGImage, Effect_crop) {
     
     EffectFunction f = Effect::get(EFF_CROP);
     Json args = Json::object {
-            { "offsetX", 2 },
-            { "offsetY", 2 },
-            { "width", 2 },
-            { "height", 2 }};
+            {"offsetX", 2},
+            {"offsetY", 2},
+            {"width",   2},
+            {"height",  2}};
 
     
     int result = image.applyFilter(f, args);
@@ -116,6 +116,17 @@ TEST(PNGImage, Effect_gamma) {
     Json args = Json::object {{"gamma", 2.25}};
     int result = image.applyFilter(f, args);
     ASSERT_EQ(NO_ERR, result);
-    PNGImageProcessor png;
-    image.saveImage(&png, "gamma.png");
+    image.saveImage(&prc, "gamma.jpg");
+}
+
+TEST(PNGImage, Effect_inverse) {
+    string file = TEST_ASSET("assets/wallpaper.jpg");
+    Image image(RGBA);
+    JpegImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_INVERSE);
+    Json empty = Json::object {};
+    int result = image.applyFilter(f, empty);
+    ASSERT_EQ(NO_ERR, result);
+    image.saveImage(&prc, "inverse.jpg");
 }
