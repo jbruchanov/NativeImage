@@ -189,7 +189,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
     }
 
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        LOGE("Invalid bitmap format, expected RGBA_8888 was:%d (<android/Bitmap.h>@AndroidBitmapFormat)", info.format);
+        LOGE("Invalid bitmap format, expected RGBA_8888 was:%d (<android/Bitmap.h>@AndroidBitmapFormat)", (int)info.format);
         return (jint)INVALID_BITMAP_FORMAT;
     }
 
