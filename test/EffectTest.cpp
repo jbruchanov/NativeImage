@@ -8,6 +8,7 @@
 #include "../src/Image.hpp"
 #include "../src/PNGImageProcessor.hpp"
 #include "../src/Errors.h"
+#include "../src/JpegImageProcessor.h"
 
 TEST(PNGImage, Effect_grayScale) {
     string file = PNG_4x4RGB_ASSET;
@@ -92,4 +93,29 @@ TEST(PNGImage, Effect_brightness) {
     int result = image.applyFilter(f, args);
     ASSERT_EQ(NO_ERR, result);
     image.saveImage(&prc, "brightness.png");
+}
+
+TEST(PNGImage, Effect_contrast) {
+    string file = TEST_ASSET("assets/wallpaper.jpg");
+    Image image(RGBA);
+    JpegImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_CONTRAST);
+    Json args = Json::object {{"contrast", 64}};
+    int result = image.applyFilter(f, args);
+    ASSERT_EQ(NO_ERR, result);
+    image.saveImage(&prc, "contrast.jpg");
+}
+
+TEST(PNGImage, Effect_gamma) {
+    string file = TEST_ASSET("assets/wallpaper.jpg");
+    Image image(RGBA);
+    JpegImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_GAMMA);
+    Json args = Json::object {{"gamma", 2.25}};
+    int result = image.applyFilter(f, args);
+    ASSERT_EQ(NO_ERR, result);
+    PNGImageProcessor png;
+    image.saveImage(&png, "gamma.png");
 }

@@ -8,6 +8,8 @@
 #define EFF_GRAYSCALE "grayScale"
 #define EFF_CROP "crop"
 #define EFF_BRIGHTNESS "brightness"
+#define EFF_CONTRAST "contrast"
+#define EFF_GAMMA "gamma"
 
 #include <map>
 #include "string"

@@ -2,9 +2,12 @@
 // Created by scurab on 09/04/17.
 //
 
+#include <cmath>
 #include "Effect.h"
 #include "Image.hpp"
 #include "Errors.h"
+
+#define COLOR_TRUNCATE(value) max(0, min(255, value))
 
 EffectResult grayScale(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     unsigned char v;
@@ -53,7 +56,38 @@ EffectResult brightness(unsigned char *data, int width, int height, int componen
             if (componentsPerPixel == RGBA && i % RGBA == 0) {
                 i++;
             }
-            data[i] = (unsigned char) max(0, min(255, ((int) data[i]) + brightness));
+            data[i] = (unsigned char) COLOR_TRUNCATE(((int) data[i]) + brightness);
+        }
+    }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
+}
+
+EffectResult contrast(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    Json arg = *saveArgs;
+    int contrast = arg["contrast"].int_value();
+    if (contrast != 0) {
+        for (int i = 0, l = width * height * componentsPerPixel; i < l; i++) {
+            if (componentsPerPixel == RGBA && i % RGBA == 0) {
+                i++;
+            }
+            double factor = ((259 * (contrast + 255.0)) / (255 * (259 - contrast)));
+            data[i] = (unsigned char) COLOR_TRUNCATE((int)(factor * (data[i] - 128) + 128));
+        }
+    }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
+}
+
+EffectResult gamma(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    Json arg = *saveArgs;
+    double gamma = arg["gamma"].number_value();
+    if (gamma != 1.0) {
+        for (int i = 0, l = width * height * componentsPerPixel; i < l; i++) {
+            if (componentsPerPixel == RGBA && i % RGBA == 0) {
+                i++;
+            }
+            double gammaCorrection = 1.0 / gamma;
+            double value = 255.0 * pow((((int) data[i]) / 255.0), gammaCorrection);
+            data[i] = (unsigned char) COLOR_TRUNCATE((int) round(value));
         }
     }
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
@@ -63,6 +97,8 @@ void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_GRAYSCALE, grayScale));
     pMap->insert(std::pair<string, EffectFunction>(EFF_CROP, crop));
     pMap->insert(std::pair<string, EffectFunction>(EFF_BRIGHTNESS, brightness));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_CONTRAST, contrast));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_GAMMA, gamma));
 }
 
 EffectFunction Effect::get(std::string name) {
