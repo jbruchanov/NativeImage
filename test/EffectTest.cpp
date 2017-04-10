@@ -130,3 +130,27 @@ TEST(PNGImage, Effect_inverse) {
     ASSERT_EQ(NO_ERR, result);
     image.saveImage(&prc, "inverse.jpg");
 }
+
+TEST(PNGImage, Effect_flipv) {
+    string file = TEST_ASSET("assets/wallpaper.jpg");
+    Image image(RGBA);
+    JpegImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_FLIP_VERTICAL);
+    Json empty = Json::object {};
+    int result = image.applyFilter(f, empty);
+    ASSERT_EQ(NO_ERR, result);
+    image.saveImage(&prc, "flipv.jpg");
+}
+
+TEST(PNGImage, Effect_fliph) {
+    string file = TEST_ASSET("assets/wallpaper.jpg");
+    Image image(RGBA);
+    JpegImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_FLIP_HORIZONTAL);
+    Json empty = Json::object {};
+    int result = image.applyFilter(f, empty);
+    ASSERT_EQ(NO_ERR, result);
+    image.saveImage(&prc, "fliph.jpg");
+}

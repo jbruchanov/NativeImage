@@ -11,6 +11,8 @@
 #define EFF_CONTRAST "contrast"
 #define EFF_GAMMA "gamma"
 #define EFF_INVERSE "inverse"
+#define EFF_FLIP_VERTICAL "flipv"
+#define EFF_FLIP_HORIZONTAL "fliph"
 
 #include <map>
 #include "string"

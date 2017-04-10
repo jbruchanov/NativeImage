@@ -80,7 +80,7 @@ EffectResult contrast(unsigned char *data, int width, int height, int components
 EffectResult gamma(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     double gamma = arg["gamma"].number_value();
-    if (gamma != 1.0) {
+    if (gamma != 1.0 && gamma > 0.0) {
         for (int i = 0, l = width * height * componentsPerPixel; i < l; i++) {
             if (componentsPerPixel == RGBA && i % RGBA == 0) {
                 i++;
@@ -103,6 +103,32 @@ EffectResult inverse(unsigned char *data, int width, int height, int componentsP
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
+EffectResult flipv(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    for (int y = 0, n = height / 2; y < n; y++) {
+        for (int x = 0; x < width; x++) {
+            int isrc = ARRAY_INDEX(x, y, width) * componentsPerPixel;
+            int idst = (x + ((height - y - 1) * width)) * componentsPerPixel;
+            for (int z = 0; z < componentsPerPixel; z++) {
+                swap(data[isrc + z], data[idst + z]);
+            }
+        }
+    }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
+}
+
+EffectResult fliph(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0, n = width / 2; x < n; x++) {
+            int isrc = ARRAY_INDEX(x, y, width) * componentsPerPixel;
+            int idst = ((width - x - 1) + (y * width)) * componentsPerPixel;
+            for (int z = 0; z < componentsPerPixel; z++) {
+                swap(data[isrc + z], data[idst + z]);
+            }
+        }
+    }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
+}
+
 void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_GRAYSCALE, grayScale));
     pMap->insert(std::pair<string, EffectFunction>(EFF_CROP, crop));
@@ -110,6 +136,8 @@ void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_CONTRAST, contrast));
     pMap->insert(std::pair<string, EffectFunction>(EFF_GAMMA, gamma));
     pMap->insert(std::pair<string, EffectFunction>(EFF_INVERSE, inverse));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_FLIP_VERTICAL, flipv));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_FLIP_HORIZONTAL, fliph));
 }
 
 EffectFunction Effect::get(std::string name) {
