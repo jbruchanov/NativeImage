@@ -5,7 +5,8 @@
 #ifndef NATIVEIMAGEAPP_EFFECT_H
 #define NATIVEIMAGEAPP_EFFECT_H
 
-#define GRAYSCALE "grayScale"
+#define EFF_GRAYSCALE "grayScale"
+#define EFF_CROP "crop"
 
 #include <map>
 #include "string"
@@ -18,6 +19,10 @@ struct EffectResult : public ImageData {
 public:
     int result;
     int componentsPerPixel;
+
+    EffectResult(int result) {
+        this->result = result;
+    }
 
     EffectResult(int result, unsigned char* data, int w, int h, int comps) {
         this->result = result;

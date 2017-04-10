@@ -17,7 +17,67 @@ TEST(PNGImage, Effect_grayScale) {
     ASSERT_EQ(NO_ERR, ior.result);
 
     const ImageData data = image.getImageData();
-    EffectFunction f = Effect::get(GRAYSCALE);
+    EffectFunction f = Effect::get(EFF_GRAYSCALE);
     f(data.data, data.metaData.imageWidth, data.metaData.imageHeight, 4, nullptr);
     image.saveImage(&prc, "grayscale.png");
+}
+
+TEST(PNGImage, Effect_crop) {
+    string file = PNG_4x4RGB_ASSET;
+    Image image(RGB);
+    PNGImageProcessor prc;
+    IOResult ior = image.loadImage(&prc, file.c_str());
+    
+    EffectFunction f = Effect::get(EFF_CROP);
+    Json args = Json::object {
+            { "offsetX", 2 },
+            { "offsetY", 2 },
+            { "width", 2 },
+            { "height", 2 }};
+
+    
+    int result = image.applyFilter(f, args);
+    ASSERT_EQ(NO_ERR, result);
+    ASSERT_EQ(2, image.getMetaData().imageWidth);
+    ASSERT_EQ(2, image.getMetaData().imageHeight);
+
+    const ImageData im = image.getImageData();
+    unsigned char *data = im.data;
+
+    int offset = 0;
+    ASSERT_EQ(BITMAP_COLOR(0x603243), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
+    offset += RGB;
+    ASSERT_EQ(BITMAP_COLOR(0xEB954A), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
+    offset += RGB;
+    ASSERT_EQ(BITMAP_COLOR(0xC27C96), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
+    offset += RGB;
+    ASSERT_EQ(BITMAP_COLOR(0xF236C2), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
+}
+
+TEST(PNGImage, Effect_crop2) {
+    string file = PNG_4x4RGB_ASSET;
+    Image image(RGBA);
+    PNGImageProcessor prc;
+    IOResult ior = image.loadImage(&prc, file.c_str());
+
+    EffectFunction f = Effect::get(EFF_CROP);
+    Json args = Json::object {
+            { "offsetX", 0 },
+            { "offsetY", 3 },
+            { "width", 2 },
+            { "height", 1 }};
+
+
+    int result = image.applyFilter(f, args);
+    ASSERT_EQ(NO_ERR, result);
+    ASSERT_EQ(2, image.getMetaData().imageWidth);
+    ASSERT_EQ(1, image.getMetaData().imageHeight);
+
+    const ImageData im = image.getImageData();
+    unsigned char *data = im.data;
+
+    int offset = 0;
+    ASSERT_EQ(BITMAP_COLOR(0xFFFCB892), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
+    offset += RGBA;
+    ASSERT_EQ(BITMAP_COLOR(0xFF692000), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
 }
