@@ -7,6 +7,7 @@
 
 #define EFF_GRAYSCALE "grayScale"
 #define EFF_CROP "crop"
+#define EFF_BRIGHTNESS "brightness"
 
 #include <map>
 #include "string"

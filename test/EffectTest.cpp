@@ -81,3 +81,15 @@ TEST(PNGImage, Effect_crop2) {
     offset += RGBA;
     ASSERT_EQ(BITMAP_COLOR(0xFF692000), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
 }
+
+TEST(PNGImage, Effect_brightness) {
+    string file = PNG_4x4RGB_ASSET;
+    Image image(RGBA);
+    PNGImageProcessor prc;
+    image.loadImage(&prc, file.c_str());
+    EffectFunction f = Effect::get(EFF_BRIGHTNESS);
+    Json args = Json::object {{"brightness", 50}};
+    int result = image.applyFilter(f, args);
+    ASSERT_EQ(NO_ERR, result);
+    image.saveImage(&prc, "brightness.png");
+}

@@ -17,7 +17,8 @@ void Debug::printTable(const char *prefix, unsigned char *table, int stride, int
                 spaces = 0;
             }
         }
-        printf("%02d", (int)table[i]);//%02x
+        printf("%02x", (int)table[i]);//%02x
+//        printf("%02d", (int)table[i]);//%02x
     }
     printf("\n");
 }

@@ -45,9 +45,24 @@ EffectResult crop(unsigned char *data, int width, int height, int componentsPerP
     return EffectResult(NO_ERR, newPtr, cropWidth, cropHeight, componentsPerPixel);
 }
 
+EffectResult brightness(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    Json arg = *saveArgs;
+    int brightness = arg["brightness"].int_value();
+    if (brightness != 0) {
+        for (int i = 0, l = width * height * componentsPerPixel; i < l; i++) {
+            if (componentsPerPixel == RGBA && i % RGBA == 0) {
+                i++;
+            }
+            data[i] = (unsigned char) max(0, min(255, ((int) data[i]) + brightness));
+        }
+    }
+    return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
+}
+
 void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_GRAYSCALE, grayScale));
     pMap->insert(std::pair<string, EffectFunction>(EFF_CROP, crop));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_BRIGHTNESS, brightness));
 }
 
 EffectFunction Effect::get(std::string name) {
