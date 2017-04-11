@@ -13,6 +13,7 @@
 #define EFF_INVERSE "inverse"
 #define EFF_FLIP_VERTICAL "flipv"
 #define EFF_FLIP_HORIZONTAL "fliph"
+#define EFF_NAIVE_RESIZE "naiveResize"
 
 #include <map>
 #include "string"
@@ -44,7 +45,6 @@ typedef EffectResult (*EffectFunction)(unsigned char *, int, int, int, json11::J
 class Effect {
 public:
     static EffectFunction get(string name);
-
 };
 
 

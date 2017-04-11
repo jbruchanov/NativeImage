@@ -4,6 +4,7 @@
 
 #include "../json11/json11.hpp"
 #include <cstring>
+#include <cmath>
 #include "Image.hpp"
 #include "Errors.h"
 #include "LogHelper.h"
@@ -43,11 +44,11 @@ ImageData Image::getImageData() {
     return r;
 }
 
-void Image::setPixels(int *target, int targetComponentsPerPixel) {
-    this->setPixels(target, targetComponentsPerPixel, 0, 0, mMetaData.imageWidth, mMetaData.imageHeight);
+void Image::setPixels(int *target) {
+    this->setPixels(target, 0, 0, mMetaData.imageWidth, mMetaData.imageHeight);
 }
 
-void Image::setPixels(int* target, int targetComponentsPerPixel, int offsetX, int offsetY, int width, int height) {
+void Image::setPixels(int* target, int offsetX, int offsetY, int width, int height) {
     if (mImageData != NULL && target != NULL) {
         int i = 0;
         unsigned char a, b, c, z;
@@ -64,8 +65,31 @@ void Image::setPixels(int* target, int targetComponentsPerPixel, int offsetX, in
             }
         }
     }
+}
+
+void Image::setPixelsScale(int *target, int width, int height) {
+    int w1 = mMetaData.imageWidth, h1 = mMetaData.imageHeight;
+    int w2 = width, h2 = height;
+    double x_ratio = w1 / (double) w2;
+    double y_ratio = h1 / (double) h2;
+    double px, py;
+    for (int y = 0; y < h2; y++) {
+        for (int x = 0; x < w2; x++) {
+            px = floor(x * x_ratio);
+            py = floor(y * y_ratio);
+            int srcOffset = (int) (((py * w1) + px) * mComponentsPerPixel);
+            int dstOffset = ARRAY_INDEX(x, y, w2);
+            int v;
+            if (mComponentsPerPixel == RGBA) {
+                v = ((int)mImageData[srcOffset + 0]) << 24 | ((int)mImageData[srcOffset + 1]) << 16 | ((int)mImageData[srcOffset + 2]) << 8 | ((int)mImageData[srcOffset + 3]) << 0;
+            } else {
+                v = 0xFF << 24 | ((int)mImageData[srcOffset + 0]) << 16 | ((int)mImageData[srcOffset + 1]) << 8 | ((int)mImageData[srcOffset + 2]) << 0;
+            }
+            target[dstOffset] = v;
+        }
     }
 }
+
 
 void Image::rotate90(bool fast) {
     ImageMetaData metaData = getMetaData();

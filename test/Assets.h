@@ -12,7 +12,7 @@
 #define JPEG_INVALID TEST_ASSET("assets/invalid.jpg")
 #define JPEG_SAMPLE_ASSET TEST_ASSET("assets/test.jpg")
 #define JPEG_SAMPLE4_ASSET TEST_ASSET("assets/pixels4x4.jpg")
-
+#define JPEG_WALLPAPER TEST_ASSET("assets/wallpaper.jpg")
 
 #define PNG_1X1_PX TEST_ASSET("assets/red.png")
 #define PNG_3X1RGB_PX TEST_ASSET("assets/3x1RGB.png")

@@ -199,7 +199,48 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
         return (jint)v;
     }
 
-    image->setPixels(ptr, 4, (int)offsetX, (int)offsetY, (int)width, (int)height);
+    image->setPixels(ptr, (int)offsetX, (int)offsetY, (int)width, (int)height);
+
+    v = AndroidBitmap_unlockPixels(env, bitmap);
+    if(v != ANDROID_BITMAP_RESULT_SUCCESS) {
+        LOGE("!!! Unable to unlock pixels, something BAD will happen soon !!!");
+    }
+    //well not sure what to do here if it's not unlocked ?
+    return (jint) v;
+}
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _setPixelsScale
+ * Signature: (Landroid/graphics/Bitmap;II)I
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixelsScale
+        (JNIEnv *env, jobject obj, jobject bitmap, jint width, jint height) {
+    AndroidBitmapInfo info;
+    int v;
+    v = AndroidBitmap_getInfo(env, bitmap, &info);
+    if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
+        return (jint)v;
+    }
+
+    Image *image = getObject(env, obj);
+    ImageMetaData metaData = image->getMetaData();
+    if (width > metaData.imageWidth || height > metaData.imageHeight) {
+        return (jint)INVALID_RESOLUTION;
+    }
+
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        LOGE("Invalid bitmap format, expected RGBA_8888 was:%d (<android/Bitmap.h>@AndroidBitmapFormat)", (int)info.format);
+        return (jint)INVALID_BITMAP_FORMAT;
+    }
+
+    int *ptr;
+    v = AndroidBitmap_lockPixels(env, bitmap, (void **) &ptr);
+    if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
+        return (jint)v;
+    }
+
+    image->setPixelsScale(ptr, (int)width, (int)height);
 
     v = AndroidBitmap_unlockPixels(env, bitmap);
     if(v != ANDROID_BITMAP_RESULT_SUCCESS) {

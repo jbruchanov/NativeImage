@@ -57,6 +57,14 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
 
 /*
  * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Method:    _setPixelsScale
+ * Signature: (Landroid/graphics/Bitmap;II)I
+ */
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixelsScale
+        (JNIEnv *, jobject, jobject, jint, jint);
+
+/*
+ * Class:     com_scurab_andriod_nativeimage_NativeImage
  * Method:    _rotate
  * Signature: (I)V
  */

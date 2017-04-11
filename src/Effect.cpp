@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <cstring>
 #include "Effect.h"
 #include "Image.hpp"
 #include "Errors.h"
@@ -129,6 +130,31 @@ EffectResult fliph(unsigned char *data, int width, int height, int componentsPer
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
+EffectResult naiveResize(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    Json arg = *saveArgs;
+    int w1 = width, h1 = height;
+    int w2 = arg["width"].int_value();
+    int h2 = arg["height"].int_value();
+    if (w2 > w1 || h2 > h1) {
+        return EffectResult(INVALID_RESOLUTION);
+    }
+    double x_ratio = w1 / (double) w2;
+    double y_ratio = h1 / (double) h2;
+    double px, py;
+    unsigned char tmp[componentsPerPixel];
+    for (int y = 0; y < h2; y++) {
+        for (int x = 0; x < w2; x++) {
+            px = floor(x * x_ratio);
+            py = floor(y * y_ratio);
+            int srcOffset = (int) (((py * w1) + px) * componentsPerPixel);
+            int dstOffset = ((y * w2) + x) * componentsPerPixel;
+            memcpy(tmp, data + srcOffset, (size_t) componentsPerPixel);
+            memcpy(data + dstOffset, tmp, (size_t) componentsPerPixel);
+        }
+    }
+    return EffectResult(NO_ERR, data, w2, h2, componentsPerPixel);
+}
+
 void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_GRAYSCALE, grayScale));
     pMap->insert(std::pair<string, EffectFunction>(EFF_CROP, crop));
@@ -138,6 +164,7 @@ void init(map<string, EffectFunction> *pMap) {
     pMap->insert(std::pair<string, EffectFunction>(EFF_INVERSE, inverse));
     pMap->insert(std::pair<string, EffectFunction>(EFF_FLIP_VERTICAL, flipv));
     pMap->insert(std::pair<string, EffectFunction>(EFF_FLIP_HORIZONTAL, fliph));
+    pMap->insert(std::pair<string, EffectFunction>(EFF_NAIVE_RESIZE, naiveResize));
 }
 
 EffectFunction Effect::get(std::string name) {
