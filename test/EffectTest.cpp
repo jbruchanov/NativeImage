@@ -10,7 +10,7 @@
 #include "../src/Errors.h"
 #include "../src/JpegImageProcessor.h"
 
-TEST(PNGImage, Effect_grayScale) {
+TEST(Effect, Effect_grayScale) {
     string file = PNG_4x4RGB_ASSET;
     Image image(4);
     PNGImageProcessor prc;
@@ -23,7 +23,7 @@ TEST(PNGImage, Effect_grayScale) {
     image.saveImage(&prc, "grayscale.png");
 }
 
-TEST(PNGImage, Effect_crop) {
+TEST(Effect, Effect_crop) {
     string file = PNG_4x4RGB_ASSET;
     Image image(RGB);
     PNGImageProcessor prc;
@@ -55,7 +55,7 @@ TEST(PNGImage, Effect_crop) {
     ASSERT_EQ(BITMAP_COLOR(0xF236C2), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
 }
 
-TEST(PNGImage, Effect_crop2) {
+TEST(Effect, Effect_crop2) {
     string file = PNG_4x4RGB_ASSET;
     Image image(RGBA);
     PNGImageProcessor prc;
@@ -83,7 +83,7 @@ TEST(PNGImage, Effect_crop2) {
     ASSERT_EQ(BITMAP_COLOR(0xFF692000), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
 }
 
-TEST(PNGImage, Effect_brightness) {
+TEST(Effect, Effect_brightness) {
     string file = PNG_4x4RGB_ASSET;
     Image image(RGBA);
     PNGImageProcessor prc;
@@ -95,8 +95,8 @@ TEST(PNGImage, Effect_brightness) {
     image.saveImage(&prc, "brightness.png");
 }
 
-TEST(PNGImage, Effect_contrast) {
-    string file = TEST_ASSET("assets/wallpaper.jpg");
+TEST(Effect, Effect_contrast) {
+    string file = JPEG_WALLPAPER;
     Image image(RGBA);
     JpegImageProcessor prc;
     image.loadImage(&prc, file.c_str());
@@ -107,8 +107,8 @@ TEST(PNGImage, Effect_contrast) {
     image.saveImage(&prc, "contrast.jpg");
 }
 
-TEST(PNGImage, Effect_gamma) {
-    string file = TEST_ASSET("assets/wallpaper.jpg");
+TEST(Effect, Effect_gamma) {
+    string file = JPEG_WALLPAPER;
     Image image(RGBA);
     JpegImageProcessor prc;
     image.loadImage(&prc, file.c_str());
@@ -119,8 +119,8 @@ TEST(PNGImage, Effect_gamma) {
     image.saveImage(&prc, "gamma.jpg");
 }
 
-TEST(PNGImage, Effect_inverse) {
-    string file = TEST_ASSET("assets/wallpaper.jpg");
+TEST(Effect, Effect_inverse) {
+    string file = JPEG_WALLPAPER;
     Image image(RGBA);
     JpegImageProcessor prc;
     image.loadImage(&prc, file.c_str());
@@ -131,8 +131,8 @@ TEST(PNGImage, Effect_inverse) {
     image.saveImage(&prc, "inverse.jpg");
 }
 
-TEST(PNGImage, Effect_flipv) {
-    string file = TEST_ASSET("assets/wallpaper.jpg");
+TEST(Effect, Effect_flipv) {
+    string file = JPEG_WALLPAPER;
     Image image(RGBA);
     JpegImageProcessor prc;
     image.loadImage(&prc, file.c_str());
@@ -143,8 +143,8 @@ TEST(PNGImage, Effect_flipv) {
     image.saveImage(&prc, "flipv.jpg");
 }
 
-TEST(PNGImage, Effect_fliph) {
-    string file = TEST_ASSET("assets/wallpaper.jpg");
+TEST(Effect, Effect_fliph) {
+    string file = JPEG_WALLPAPER;
     Image image(RGBA);
     JpegImageProcessor prc;
     image.loadImage(&prc, file.c_str());
