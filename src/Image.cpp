@@ -49,26 +49,21 @@ void Image::setPixels(int *target, int targetComponentsPerPixel) {
 
 void Image::setPixels(int* target, int targetComponentsPerPixel, int offsetX, int offsetY, int width, int height) {
     if (mImageData != NULL && target != NULL) {
-        ImageData data = getImageData();
-        bool isFullImage = offsetX == 0 && offsetY == 0 && mMetaData.imageWidth == width && mMetaData.imageHeight == height;
-        if (isFullImage && mComponentsPerPixel == targetComponentsPerPixel) {
-            memcpy(target, data.data, (size_t) (data.metaData.pixelCount() * mComponentsPerPixel));
-        } else /*if (mComponentsPerPixel == RGB && targetComponentsPerPixel == RGBA) */{
-            int i = 0;
-            unsigned char a, b, c, z;
-            unsigned char *rawData = mImageData;
-            for (int y = offsetY; y < (offsetY + height); y++) {
-                for (int x = offsetX; x < (offsetX + width); x++) {
-                    int startIndex = (y * mMetaData.imageWidth + x) * mComponentsPerPixel;
-                    z = (mComponentsPerPixel == RGB ? (unsigned char)0xFF : rawData[startIndex++]);
-                    a = rawData[startIndex++];
-                    b = rawData[startIndex++];
-                    c = rawData[startIndex];
-                    target[i] = z << 24 | a << 0 | b << 8 | c << 16;
-                    i++;
-                }
+        int i = 0;
+        unsigned char a, b, c, z;
+        unsigned char *rawData = mImageData;
+        for (int y = offsetY; y < (offsetY + height); y++) {
+            for (int x = offsetX; x < (offsetX + width); x++) {
+                int startIndex = (y * mMetaData.imageWidth + x) * mComponentsPerPixel;
+                z = (mComponentsPerPixel == RGB ? (unsigned char)0xFF : rawData[startIndex++]);
+                a = rawData[startIndex++];
+                b = rawData[startIndex++];
+                c = rawData[startIndex];
+                target[i] = z << 24 | a << 16 | b << 8 | c << 0;
+                i++;
             }
         }
+    }
     }
 }
 

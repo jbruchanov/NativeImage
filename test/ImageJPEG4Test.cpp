@@ -81,21 +81,6 @@ TEST(ImageJPEG4, FreesMemoryOnNewLoad) {
     ASSERT_EQ(0, data.metaData.pixelCount());
 }
 
-TEST(ImageJPEG4, SetPixels) {
-    string f = JPEG_3X1_PX;
-    Image image(4);
-    image.loadImage(&prc, f.c_str());
-    int data[3];
-    int size = sizeof(data);
-    memset(&data, 0, size);
-    image.setPixels(data, 4);
-
-    int *ptr = (int *) image.getImageData().data;
-    ASSERT_EQ(ptr[0], data[0]);
-    ASSERT_EQ(ptr[1], data[1]);
-    ASSERT_EQ(ptr[2], data[2]);
-}
-
 TEST(ImageJPEG4, Rotate180) {
     Image image(4);
     string2 imageData = new unsigned char[48]
@@ -250,33 +235,34 @@ TEST(ImageJPEG4, SetPixelsCrop) {
 
     int target[4];
 
+    //NO BITMAP_COLOR, because it's simple set!
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 0, 0, 1, 1);
-    ASSERT_EQ(BITMAP_COLOR(0x11121314), target[0]);
+    image.setPixels((int *) &target, 0, 0, 1, 1);
+    ASSERT_EQ((0x11121314), target[0]);
 
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 1, 1, 1, 1);
-    ASSERT_EQ(BITMAP_COLOR(0x61626364), target[0]);
+    image.setPixels((int *) &target, 1, 1, 1, 1);
+    ASSERT_EQ((0x61626364), target[0]);
 
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 2, 2, 1, 1);
-    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[0]);
+    image.setPixels((int *) &target, 2, 2, 1, 1);
+    ASSERT_EQ((0xB1B2B3B4), target[0]);
 
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 2, 2, 2, 1);
-    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[0]);
-    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[1]);
+    image.setPixels((int *) &target, 2, 2, 2, 1);
+    ASSERT_EQ((0xB1B2B3B4), target[0]);
+    ASSERT_EQ((0xC1C2C3C4), target[1]);
 
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 3, 0, 1, 3);
-    ASSERT_EQ(BITMAP_COLOR(0x41424344), target[0]);
-    ASSERT_EQ(BITMAP_COLOR(0x81828384), target[1]);
-    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[2]);
+    image.setPixels((int *) &target, 3, 0, 1, 3);
+    ASSERT_EQ((0x41424344), target[0]);
+    ASSERT_EQ((0x81828384), target[1]);
+    ASSERT_EQ((0xC1C2C3C4), target[2]);
 
     memset(target, 0, sizeof(target));
-    image.setPixels((int *) &target, 4, 0, 2, 4, 1);
-    ASSERT_EQ(BITMAP_COLOR(0x91929394), target[0]);
-    ASSERT_EQ(BITMAP_COLOR(0xA1A2A3A4), target[1]);
-    ASSERT_EQ(BITMAP_COLOR(0xB1B2B3B4), target[2]);
-    ASSERT_EQ(BITMAP_COLOR(0xC1C2C3C4), target[3]);
+    image.setPixels((int *) &target, 0, 2, 4, 1);
+    ASSERT_EQ((0x91929394), target[0]);
+    ASSERT_EQ((0xA1A2A3A4), target[1]);
+    ASSERT_EQ((0xB1B2B3B4), target[2]);
+    ASSERT_EQ((0xC1C2C3C4), target[3]);
 }
