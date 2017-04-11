@@ -47,8 +47,8 @@ TEST(ImageJPEG3, LoadRawData) {
     unsigned char *ptr = (unsigned char *) raw.data;
     ASSERT_EQ(3, raw.metaData.pixelCount());
 
-    unsigned char exp[] = {0xA4, 0x27, 0X25,
-                           0xFF, 0xDA, 0xD8,
+    unsigned char exp[] = {0x25, 0x27, 0xA4,
+                           0xD8, 0xDA, 0xFF,
                            0x00, 0x00, 0x00};
     for (int i = 0; i < 9; i++) {
         unsigned char pc = ptr[i];
@@ -76,9 +76,9 @@ TEST(ImageJPEG3, SetPixels) {
     memset(&data, 0, size);
     image.setPixels(data);
 
-    ASSERT_EQ((0xFFA42725), data[0]);
-    ASSERT_EQ((0xFFFFDAD8), data[1]);
-    ASSERT_EQ((0xFF000000), data[2]);
+    ASSERT_EQ(BITMAP_COLOR(0xFFA42725), data[0]);
+    ASSERT_EQ(BITMAP_COLOR(0xFFFFDAD8), data[1]);
+    ASSERT_EQ(BITMAP_COLOR(0xFF000000), data[2]);
 }
 
 TEST(ImageJPEG3, Rotate180) {

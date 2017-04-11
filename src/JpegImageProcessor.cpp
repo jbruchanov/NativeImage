@@ -18,23 +18,20 @@ struct _Error {
 typedef struct _Error *_ErrorPtr;
 
 int storeRawData(IOResult &rd, int componentsPerPixel, JSAMPROW row, int stride, int pixelIndex) {
-    if (componentsPerPixel == RGBA) {
-        unsigned char a, b, c;
-        int i = 0;
-        int pixelIndexStart = pixelIndex * RGBA;
-        while (i < stride) {
-            a = row[i++];
-            b = row[i++];
-            c = row[i++];
-            //internal android bitmap is in following order
-            rd.data[pixelIndexStart++] = 0xFF;
-            rd.data[pixelIndexStart++] = c;
-            rd.data[pixelIndexStart++] = b;
-            rd.data[pixelIndexStart++] = a;
+    unsigned char a, b, c, z;
+    int i = 0;
+    int pixelIndexStart = pixelIndex * componentsPerPixel;
+    while (i < stride) {
+        a = row[i++];
+        b = row[i++];
+        c = row[i++];
+        //internal android bitmap is in following order
+        if(componentsPerPixel == RGBA) {
+            rd.data[pixelIndexStart++] = (unsigned char)0xFF;
         }
-    } else if (componentsPerPixel == RGB) {
-        void *start = rd.data + (pixelIndex * componentsPerPixel * sizeof(unsigned char));
-        memcpy(start, row, stride);
+        rd.data[pixelIndexStart++] = c;
+        rd.data[pixelIndexStart++] = b;
+        rd.data[pixelIndexStart++] = a;
     }
     pixelIndex += rd.metaData.imageWidth;
     return pixelIndex;
