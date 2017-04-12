@@ -255,7 +255,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScal
  * Method:    _rotate
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
+JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
         (JNIEnv *env, jobject obj, jint angle, jboolean fast) {
     Image *image = getObject(env, obj);
     switch ((int) angle) {
