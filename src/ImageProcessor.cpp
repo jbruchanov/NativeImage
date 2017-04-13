@@ -4,9 +4,8 @@
 #include <cstring>
 #include "ImageProcessor.hpp"
 #include "LogHelper.h"
-#include "Image.hpp"
 
-unsigned char *ImageProcessor::removeAlpha(unsigned char *data, int width, int height, int componentsPerPixel) {
+bytep_t *ImageProcessor::removeAlpha(bytep_t *data, int width, int height, int componentsPerPixel) {
     if (data != nullptr && componentsPerPixel == RGBA) {
         int newComponent = 3;
         long newLen = (long) width * height * newComponent;
@@ -22,7 +21,7 @@ unsigned char *ImageProcessor::removeAlpha(unsigned char *data, int width, int h
         } else {
             //i would expect that pointer will be same, as it's shrinking, so no need for changing,
             //but docs seem to be saying that it's not guaranteed
-            data = (unsigned char *) newPtr;
+            data = (bytep_t *) newPtr;
         }
     }
     return data;

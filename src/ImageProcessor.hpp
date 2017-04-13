@@ -1,6 +1,7 @@
 //
 // Created by scurab on 04/04/17.
 //
+#include "Types.h"
 #include "ImageMetaData.h"
 #include "../json11/json11.hpp"
 #ifndef NATIVEIMAGEAPP_IMAGEPROCESSOR_H
@@ -10,7 +11,7 @@ using namespace std;
 using namespace json11;
 
 struct ImageData {
-    unsigned char* data;
+    bytep_t* data;
     ImageMetaData metaData;
 };
 
@@ -40,7 +41,7 @@ public:
      * @param componentsPerPixel (actual bytes/Px must be 4, otherwise nothing)
      * @return new pointer for data (as it's data shrinking, it should be same (not guaranteed))
      */
-    static unsigned char* removeAlpha(unsigned char *data, int width, int height, int componentsPerPixel);
+    static bytep_t* removeAlpha(bytep_t *data, int width, int height, int componentsPerPixel);
 };
 
 #endif //NATIVEIMAGEAPP_IMAGEPROCESSOR_H

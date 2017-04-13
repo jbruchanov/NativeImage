@@ -15,6 +15,7 @@
 #define EFF_FLIP_HORIZONTAL "fliph"
 #define EFF_NAIVE_RESIZE "naiveResize"
 
+#include "Types.h"
 #include <map>
 #include "string"
 #include "../json11/json11.hpp"
@@ -31,7 +32,7 @@ public:
         this->result = result;
     }
 
-    EffectResult(int result, unsigned char* data, int w, int h, int comps) {
+    EffectResult(int result, bytep_t * data, int w, int h, int comps) {
         this->result = result;
         this->data = data;
         this->metaData.imageWidth = w;

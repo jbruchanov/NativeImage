@@ -9,7 +9,7 @@
 #include "Errors.h"
 #include "LogHelper.h"
 
-#define CHAR_SIZE sizeof(unsigned char)
+#define CHAR_SIZE sizeof(bytep_t)
 
 using namespace json11;
 
@@ -51,12 +51,12 @@ void Image::setPixels(int *target) {
 void Image::setPixels(int* target, int offsetX, int offsetY, int width, int height) {
     if (mImageData != NULL && target != NULL) {
         int i = 0;
-        unsigned char a, b, c, z;
-        unsigned char *rawData = mImageData;
+        bytep_t a, b, c, z;
+        bytep_t *rawData = mImageData;
         for (int y = offsetY; y < (offsetY + height); y++) {
             for (int x = offsetX; x < (offsetX + width); x++) {
                 int startIndex = (y * mMetaData.imageWidth + x) * mComponentsPerPixel;
-                z = (mComponentsPerPixel == RGB ? (unsigned char)0xFF : rawData[startIndex++]);
+                z = (mComponentsPerPixel == RGB ? (bytep_t)0xFF : rawData[startIndex++]);
                 a = rawData[startIndex++];
                 b = rawData[startIndex++];
                 c = rawData[startIndex];
@@ -98,7 +98,7 @@ void Image::rotate90(bool fast) {
     int is, it;
 
     if (fast) {
-        unsigned char *temp = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * mComponentsPerPixel));
+        bytep_t *temp = (bytep_t *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * mComponentsPerPixel));
         memset(temp, 0, (metaData.imageWidth * metaData.imageHeight * mComponentsPerPixel));
         //transpose
         for (int y = 0; y < h; y++) {
@@ -116,7 +116,7 @@ void Image::rotate90(bool fast) {
         //transpose
         unsigned int next = 0;
         unsigned int i = 0;
-        unsigned char rgbTmp[mComponentsPerPixel];//needed only for non 4/px
+        bytep_t rgbTmp[mComponentsPerPixel];//needed only for non 4/px
         memset(rgbTmp, 0, sizeof(rgbTmp));
 
         for (unsigned int start = 0; start <= w * h - 1; ++start) {
@@ -180,7 +180,7 @@ void Image::rotate180() {
     }
 }
 
-void Image::setRawData(unsigned char *data, int w, int h, int componentsPerPixel) {
+void Image::setRawData(bytep_t *data, int w, int h, int componentsPerPixel) {
     if (!(componentsPerPixel == RGBA || componentsPerPixel == RGB)) {
         throw "Only 4 or 3 for componentsPerPixel";
     }
@@ -199,7 +199,7 @@ string Image::getAndClearLastError() {
 }
 
 inline void Image::swap(int src, int dst) {
-    unsigned char *data = mImageData;
+    bytep_t *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;
     for (int i = 0; i < mComponentsPerPixel; i++) {
@@ -208,7 +208,7 @@ inline void Image::swap(int src, int dst) {
 }
 
 inline void Image::copy(int src, int dst) {
-    unsigned char *data = mImageData;
+    bytep_t *data = mImageData;
     src *= mComponentsPerPixel;
     dst *= mComponentsPerPixel;
     memcpy(&data[dst], &mImageData[src], (size_t) mComponentsPerPixel);

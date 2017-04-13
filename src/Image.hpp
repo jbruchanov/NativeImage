@@ -7,9 +7,8 @@
 
 #define BITMAP_COLOR(color) ((0xFF00FF00 & color) | (0x00FF0000 & color) >> 16  | (0x000000FF & color) << 16)
 #define ARRAY_INDEX(x, y, w) (x + (y * w))
-#define RGB 3
-#define RGBA 4
 
+#include "Types.h"
 #include <string>
 #include "ImageMetaData.h"
 #include "ImageProcessor.hpp"
@@ -37,7 +36,7 @@ public:
     string getAndClearLastError();
 
     ImageData getImageData();
-    void setRawData(unsigned char *data, int w, int h, int componentsPerPixel);
+    void setRawData(bytep_t *data, int w, int h, int componentsPerPixel);
     void swap(int src, int dst);
     void copy(int src, int dst);
 

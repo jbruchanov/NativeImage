@@ -5,7 +5,7 @@
 #include <cstdio>
 #include "Debug.h"
 
-void Debug::printTable(const char *prefix, unsigned char *table, int stride, int imWidth, int components) {
+void Debug::printTable(const char *prefix, bytep_t *table, int stride, int imWidth, int components) {
     printf("%s\n", prefix);
     int spaces = 0;
     for (int i = 0; i < stride; i++) {

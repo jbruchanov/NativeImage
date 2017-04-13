@@ -23,7 +23,7 @@ public:
      * @param height
      * @return
      */
-    static void addAlpha(unsigned char *data, int width, int height);
+    static void addAlpha(bytep_t *data, int width, int height);
 };
 
 

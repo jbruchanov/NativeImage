@@ -92,10 +92,10 @@ IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, 
     }
 
     ImageMetaData metaData;
-    unsigned char *data;
+    bytep_t *data;
     metaData.imageWidth = (int) width;
     metaData.imageHeight = (int) height;
-    data = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
+    data = (bytep_t *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
     if (data == 0) {
         fclose(infile);
         return IOResult(OUT_OF_MEMORY);
@@ -220,11 +220,11 @@ int PNGImageProcessor::saveImage(const char *path, InputData &inputData) {
     return NO_ERR;
 }
 
-void PNGImageProcessor::addAlpha(unsigned char *data, int width, int height) {
+void PNGImageProcessor::addAlpha(bytep_t *data, int width, int height) {
     for (int i4 = (width * height * RGBA) - 1, i3 = (width * height * RGB) - 1; i4 >= 0 && i3 >= 0; i4--, i3--) {
         data[i4] = data[i3];
         data[--i4] = data[--i3];
         data[--i4] = data[--i3];
-        data[--i4] = (unsigned char)0xFF;
+        data[--i4] = (bytep_t)0xFF;
     }
 }

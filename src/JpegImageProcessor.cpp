@@ -18,7 +18,7 @@ struct _Error {
 typedef struct _Error *_ErrorPtr;
 
 int storeRawData(IOResult &rd, int componentsPerPixel, JSAMPROW row, int stride, int pixelIndex) {
-    unsigned char a, b, c, z;
+    bytep_t a, b, c, z;
     int i = 0;
     int pixelIndexStart = pixelIndex * componentsPerPixel;
     while (i < stride) {
@@ -27,7 +27,7 @@ int storeRawData(IOResult &rd, int componentsPerPixel, JSAMPROW row, int stride,
         c = row[i++];
         //internal android bitmap is in following order
         if(componentsPerPixel == RGBA) {
-            rd.data[pixelIndexStart++] = (unsigned char)0xFF;
+            rd.data[pixelIndexStart++] = (bytep_t)0xFF;
         }
         rd.data[pixelIndexStart++] = c;
         rd.data[pixelIndexStart++] = b;
@@ -93,10 +93,10 @@ IOResult JpegImageProcessor::loadImage(const char *path, int componentsPerPixel,
     int result = NO_ERR;
 
     ImageMetaData metaData;
-    unsigned char *data;
+    bytep_t *data;
     metaData.imageWidth = cinfo.image_width;
     metaData.imageHeight = cinfo.image_height;
-    data = (unsigned char *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
+    data = (bytep_t *) malloc((size_t) (metaData.imageWidth * metaData.imageHeight * componentsPerPixel));
     if (data == 0) {
         fclose(infile);
         return IOResult(OUT_OF_MEMORY);
@@ -206,7 +206,7 @@ int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = metaData.imageWidth * RGB;    /* JSAMPLEs per row in image_buffer */
 
-    unsigned char tmp[inputData.componentsPerPixel == RGBA ? row_stride : 0];//just keep it empty it if we have non 1
+    bytep_t tmp[inputData.componentsPerPixel == RGBA ? row_stride : 0];//just keep it empty it if we have non 1
     int pixelIndexStart = 0;
     while (cinfo.next_scanline < cinfo.image_height) {
         //convert back our internal bitmap format to jpeg format

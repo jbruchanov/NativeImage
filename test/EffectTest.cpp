@@ -43,7 +43,7 @@ TEST(Effect, Effect_crop) {
     ASSERT_EQ(2, image.getMetaData().imageHeight);
 
     const ImageData im = image.getImageData();
-    unsigned char *data = im.data;
+    bytep_t *data = im.data;
 
     int offset = 0;
     ASSERT_EQ(BITMAP_COLOR(0x603243), data[offset + 0] << 16 | data[offset + 1] << 8 | data[offset + 2]);
@@ -75,7 +75,7 @@ TEST(Effect, Effect_crop2) {
     ASSERT_EQ(1, image.getMetaData().imageHeight);
 
     const ImageData im = image.getImageData();
-    unsigned char *data = im.data;
+    bytep_t *data = im.data;
 
     int offset = 0;
     ASSERT_EQ(BITMAP_COLOR(0xFFFCB892), data[offset + 0] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);

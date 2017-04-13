@@ -9,7 +9,7 @@
 #include "../src/JpegImageProcessor.h"
 #include "Assets.h"
 
-typedef unsigned char *string1;
+typedef bytep_t *string1;
 typedef string1 string2;
 static JpegImageProcessor prc;
 
@@ -44,12 +44,12 @@ TEST(ImageJPEG4, LoadRawData_1PX) {
     Image image(4);
     image.loadImage(&prc, f.c_str());
     ImageData raw = image.getImageData();
-    unsigned char *ptr = raw.data;
+    bytep_t *ptr = raw.data;
     ASSERT_EQ(1, raw.metaData.pixelCount());
 
-    unsigned char exp[] = {0xFF, 0x00, 0x00, 0xFE};
+    bytep_t exp[] = {0xFF, 0x00, 0x00, 0xFE};
     for (int i = 0; i < 4; i++) {
-        unsigned char pc = ptr[i];
+        bytep_t pc = ptr[i];
         ASSERT_EQ(exp[i], pc);
     }
 }
@@ -59,13 +59,13 @@ TEST(ImageJPEG4, LoadRawData_3PX) {
     Image image(4);
     image.loadImage(&prc, f.c_str());
     ImageData raw = image.getImageData();
-    unsigned char *ptr = raw.data;
+    bytep_t *ptr = raw.data;
     ASSERT_EQ(3, raw.metaData.pixelCount());
-    unsigned char exp[] = {0xFF, 0x25, 0x27, 0xA4,
+    bytep_t exp[] = {0xFF, 0x25, 0x27, 0xA4,
                            0xFF, 0xD8, 0xDA, 0xFF,
                            0xFF, 0x00, 0x00, 0x00};
     for (int i = 0; i < 12; i++) {
-        unsigned char pc = ptr[i];
+        bytep_t pc = ptr[i];
         ASSERT_EQ(exp[i], pc);
     }
 }
@@ -83,28 +83,28 @@ TEST(ImageJPEG4, FreesMemoryOnNewLoad) {
 
 TEST(ImageJPEG4, Rotate180) {
     Image image(4);
-    string2 imageData = new unsigned char[48]
+    string2 imageData = new bytep_t[48]
             {11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
              51, 52, 53, 54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84,
              91, 92, 93, 94, 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124};
 
-    unsigned char imageDataExpected[] = {121, 122, 123, 124, 111, 112, 113, 114, 101, 102, 103, 104, 91, 92, 93, 94,
+    bytep_t imageDataExpected[] = {121, 122, 123, 124, 111, 112, 113, 114, 101, 102, 103, 104, 91, 92, 93, 94,
                                          81, 82, 83, 84, 71, 72, 73, 74, 61, 62, 63, 64, 51, 52, 53, 54,
                                          41, 42, 43, 44, 31, 32, 33, 34, 21, 22, 23, 24, 11, 12, 13, 14};
 
     image.setRawData(imageData, 4, 3, 4);
     image.rotate180();
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_1Slow) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[16]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44};
+    bytep_t *imageData = new bytep_t[16]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44};
 
-    unsigned char imageDataExpected[] = {11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {11, 12, 13, 14,
                                          21, 22, 23, 24,
                                          31, 32, 33, 34,
                                          41, 42, 43, 44};
@@ -112,16 +112,16 @@ TEST(ImageJPEG4, Rotate90_1Slow) {
     image.setRawData(imageData, 4, 1, 4);
     image.rotate90(false);
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_1Fast) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[16]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44};
+    bytep_t *imageData = new bytep_t[16]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44};
 
-    unsigned char imageDataExpected[] = {11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {11, 12, 13, 14,
                                          21, 22, 23, 24,
                                          31, 32, 33, 34,
                                          41, 42, 43, 44};
@@ -129,53 +129,53 @@ TEST(ImageJPEG4, Rotate90_1Fast) {
     image.setRawData(imageData, 4, 1, 4);
     image.rotate90(true);
     imageData = image.getImageData().data;
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_2Slow) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[24]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34,
+    bytep_t *imageData = new bytep_t[24]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34,
                                                      41, 42, 43, 44, 51, 52, 53, 54, 61, 62, 63, 64};
 
-    unsigned char imageDataExpected[] = {41, 42, 43, 44, 11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {41, 42, 43, 44, 11, 12, 13, 14,
                                          51, 52, 53, 54, 21, 22, 23, 24,
                                          61, 62, 63, 64, 31, 32, 33, 34};
 
     image.setRawData(imageData, 3, 2, 4);
     image.rotate90(false);
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_2Fast) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[24]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34,
+    bytep_t *imageData = new bytep_t[24]{11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34,
                                                      41, 42, 43, 44, 51, 52, 53, 54, 61, 62, 63, 64};
 
-    unsigned char imageDataExpected[] = {41, 42, 43, 44, 11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {41, 42, 43, 44, 11, 12, 13, 14,
                                          51, 52, 53, 54, 21, 22, 23, 24,
                                          61, 62, 63, 64, 31, 32, 33, 34};
 
     image.setRawData(imageData, 3, 2, 4);
     image.rotate90(true);
     imageData = image.getImageData().data;
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_3Slow) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[48]
+    bytep_t *imageData = new bytep_t[48]
             {11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
              51, 52, 53, 54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84,
              91, 92, 93, 94, 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124};
 
-    unsigned char imageDataExpected[] = {91, 92, 93, 94, 51, 52, 53, 54, 11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {91, 92, 93, 94, 51, 52, 53, 54, 11, 12, 13, 14,
                                          101, 102, 103, 104, 61, 62, 63, 64, 21, 22, 23, 24,
                                          111, 112, 113, 114, 71, 72, 73, 74, 31, 32, 33, 34,
                                          121, 122, 123, 124, 81, 82, 83, 84, 41, 42, 43, 44};
@@ -183,19 +183,19 @@ TEST(ImageJPEG4, Rotate90_3Slow) {
     image.setRawData(imageData, 4, 3, 4);
     image.rotate90(false);
 
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
 
 TEST(ImageJPEG4, Rotate90_3Fast) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[48]
+    bytep_t *imageData = new bytep_t[48]
             {11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
              51, 52, 53, 54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84,
              91, 92, 93, 94, 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124};
 
-    unsigned char imageDataExpected[] = {91, 92, 93, 94, 51, 52, 53, 54, 11, 12, 13, 14,
+    bytep_t imageDataExpected[] = {91, 92, 93, 94, 51, 52, 53, 54, 11, 12, 13, 14,
                                          101, 102, 103, 104, 61, 62, 63, 64, 21, 22, 23, 24,
                                          111, 112, 113, 114, 71, 72, 73, 74, 31, 32, 33, 34,
                                          121, 122, 123, 124, 81, 82, 83, 84, 41, 42, 43, 44};
@@ -204,7 +204,7 @@ TEST(ImageJPEG4, Rotate90_3Fast) {
     image.rotate90(true);
 
     imageData = image.getImageData().data;
-    for (int i = 0, n = sizeof(imageData) / sizeof(unsigned char); i < n; i++) {
+    for (int i = 0, n = sizeof(imageData) / sizeof(bytep_t); i < n; i++) {
         ASSERT_EQ(imageDataExpected[i], imageData[i]);
     }
 }
@@ -226,7 +226,7 @@ TEST(ImageJPEG4, SaveImage) {
 
 TEST(ImageJPEG4, SetPixelsCrop) {
     Image image(4);
-    unsigned char *imageData = new unsigned char[48]
+    bytep_t *imageData = new bytep_t[48]
             {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24, 0x31, 0x32, 0x33, 0x34, 0x41, 0x42, 0x43, 0x44,
              0x51, 0x52, 0x53, 0x54, 0x61, 0x62, 0x63, 0x64, 0x71, 0x72, 0x73, 0x74, 0x81, 0x82, 0x83, 0x84,
              0x91, 0x92, 0x93, 0x94, 0xA1, 0xA2, 0xA3, 0xA4, 0xB1, 0xB2, 0xB3, 0xB4, 0xC1, 0xC2, 0xC3, 0xC4};

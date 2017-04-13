@@ -5,10 +5,11 @@
 #ifndef NATIVEIMAGEAPP_DEBUG_H
 #define NATIVEIMAGEAPP_DEBUG_H
 
+#include "Types.h"
 
 class Debug {
 public:
-    static void printTable(const char *prefix, unsigned char *table, int stride, int imWidth, int components);
+    static void printTable(const char *prefix, bytep_t *table, int stride, int imWidth, int components);
 
 private:
     Debug(){};
