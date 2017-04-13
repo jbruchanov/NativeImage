@@ -195,17 +195,15 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
 
     int *ptr;
     v = AndroidBitmap_lockPixels(env, bitmap, (void **) &ptr);
-    if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        return (jint)v;
-    }
+    if (v == ANDROID_BITMAP_RESULT_SUCCESS) {
+        image->setPixels(ptr, (int) offsetX, (int) offsetY, (int) width, (int) height);
 
-    image->setPixels(ptr, (int)offsetX, (int)offsetY, (int)width, (int)height);
-
-    v = AndroidBitmap_unlockPixels(env, bitmap);
-    if(v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        LOGE("!!! Unable to unlock pixels, something BAD will happen soon !!!");
+        v = AndroidBitmap_unlockPixels(env, bitmap);
+        if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
+            LOGE("!!! Unable to unlock pixels, something BAD will happen soon !!!");
+            //well not sure what to do here if it's not unlocked ?
+        }
     }
-    //well not sure what to do here if it's not unlocked ?
     return (jint) v;
 }
 
@@ -236,15 +234,14 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScal
 
     int *ptr;
     v = AndroidBitmap_lockPixels(env, bitmap, (void **) &ptr);
-    if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        return (jint)v;
-    }
+    if (v == ANDROID_BITMAP_RESULT_SUCCESS) {
 
-    image->setPixelsScale(ptr, (int)width, (int)height);
+        image->setPixelsScale(ptr, (int) width, (int) height);
 
-    v = AndroidBitmap_unlockPixels(env, bitmap);
-    if(v != ANDROID_BITMAP_RESULT_SUCCESS) {
-        LOGE("!!! Unable to unlock pixels, something BAD will happen soon !!!");
+        v = AndroidBitmap_unlockPixels(env, bitmap);
+        if (v != ANDROID_BITMAP_RESULT_SUCCESS) {
+            LOGE("!!! Unable to unlock pixels, something BAD will happen soon !!!");
+        }
     }
     //well not sure what to do here if it's not unlocked ?
     return (jint) v;
