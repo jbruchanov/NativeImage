@@ -10,13 +10,13 @@
 
 #define COLOR_TRUNCATE(value) max(0, min(255, value))
 
-EffectResult grayScale(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
-    unsigned char v;
+EffectResult grayScale(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+    bytep_t v;
     for (int i = 0, l = width * height * componentsPerPixel; i < l; i += componentsPerPixel) {
         if (componentsPerPixel == RGBA) {
             i++;
         }
-        v = (unsigned char) ((data[i] + data[i + 1] + data[i + 2]) / 3);
+        v = (bytep_t) ((data[i] + data[i + 1] + data[i + 2]) / 3);
         data[i] = data[i + 1] = data[i + 2] = v;
         if (componentsPerPixel == RGBA) {
             i--;
@@ -25,7 +25,7 @@ EffectResult grayScale(unsigned char *data, int width, int height, int component
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult crop(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult crop(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     int offsetX = arg["offsetX"].int_value();
     int offsetY = arg["offsetY"].int_value();
@@ -45,11 +45,11 @@ EffectResult crop(unsigned char *data, int width, int height, int componentsPerP
             }
         }
     }
-    unsigned char* newPtr = (unsigned char *) realloc(data, (size_t) (cropWidth * cropHeight * componentsPerPixel));
+    bytep_t* newPtr = (bytep_t *) realloc(data, (size_t) (cropWidth * cropHeight * componentsPerPixel));
     return EffectResult(NO_ERR, newPtr, cropWidth, cropHeight, componentsPerPixel);
 }
 
-EffectResult brightness(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult brightness(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     int brightness = arg["brightness"].int_value();
     if (brightness != 0) {
@@ -57,13 +57,13 @@ EffectResult brightness(unsigned char *data, int width, int height, int componen
             if (componentsPerPixel == RGBA && i % RGBA == 0) {
                 i++;
             }
-            data[i] = (unsigned char) COLOR_TRUNCATE(((int) data[i]) + brightness);
+            data[i] = (bytep_t) COLOR_TRUNCATE(((int) data[i]) + brightness);
         }
     }
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult contrast(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult contrast(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     int contrast = arg["contrast"].int_value();
     if (contrast != 0) {
@@ -72,13 +72,13 @@ EffectResult contrast(unsigned char *data, int width, int height, int components
                 i++;
             }
             double factor = ((259 * (contrast + 255.0)) / (255 * (259 - contrast)));
-            data[i] = (unsigned char) COLOR_TRUNCATE((int)(factor * (data[i] - 128) + 128));
+            data[i] = (bytep_t) COLOR_TRUNCATE((int)(factor * (data[i] - 128) + 128));
         }
     }
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult gamma(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult gamma(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     double gamma = arg["gamma"].number_value();
     if (gamma != 1.0 && gamma > 0.0) {
@@ -88,23 +88,23 @@ EffectResult gamma(unsigned char *data, int width, int height, int componentsPer
             }
             double gammaCorrection = 1.0 / gamma;
             double value = 255.0 * pow((((int) data[i]) / 255.0), gammaCorrection);
-            data[i] = (unsigned char) COLOR_TRUNCATE((int) round(value));
+            data[i] = (bytep_t) COLOR_TRUNCATE((int) round(value));
         }
     }
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult inverse(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult inverse(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     for (int i = 0, l = width * height * componentsPerPixel; i < l; i++) {
         if (componentsPerPixel == RGBA && i % RGBA == 0) {
             i++;
         }
-        data[i] = (unsigned char) (255 - (int)data[i]);
+        data[i] = (bytep_t) (255 - (int)data[i]);
     }
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult flipv(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult flipv(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     for (int y = 0, n = height / 2; y < n; y++) {
         for (int x = 0; x < width; x++) {
             int isrc = ARRAY_INDEX(x, y, width) * componentsPerPixel;
@@ -117,7 +117,7 @@ EffectResult flipv(unsigned char *data, int width, int height, int componentsPer
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult fliph(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult fliph(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     for (int y = 0; y < height; y++) {
         for (int x = 0, n = width / 2; x < n; x++) {
             int isrc = ARRAY_INDEX(x, y, width) * componentsPerPixel;
@@ -130,7 +130,7 @@ EffectResult fliph(unsigned char *data, int width, int height, int componentsPer
     return EffectResult(NO_ERR, data, width, height, componentsPerPixel);
 }
 
-EffectResult naiveResize(unsigned char *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
+EffectResult naiveResize(bytep_t *data, int width, int height, int componentsPerPixel, json11::Json *saveArgs) {
     Json arg = *saveArgs;
     int w1 = width, h1 = height;
     int w2 = arg["width"].int_value();
@@ -141,7 +141,7 @@ EffectResult naiveResize(unsigned char *data, int width, int height, int compone
     double x_ratio = w1 / (double) w2;
     double y_ratio = h1 / (double) h2;
     double px, py;
-    unsigned char tmp[componentsPerPixel];
+    bytep_t tmp[componentsPerPixel];
     for (int y = 0; y < h2; y++) {
         for (int x = 0; x < w2; x++) {
             px = floor(x * x_ratio);

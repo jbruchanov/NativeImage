@@ -41,7 +41,7 @@ public:
     }
 };
 
-typedef EffectResult (*EffectFunction)(unsigned char *, int, int, int, json11::Json *saveArgs);
+typedef EffectResult (*EffectFunction)(bytep_t *, int, int, int, json11::Json *saveArgs);
 
 class Effect {
 public:

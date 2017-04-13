@@ -19,7 +19,7 @@ class Image {
 protected:
     ImageMetaData mMetaData;
     char mLastError[200];
-    unsigned char *mImageData;
+    bytep_t *mImageData;
     void releaseRawData();
     void clearMetaData();
     int mComponentsPerPixel;
