@@ -6,6 +6,7 @@
 #include "LogHelper.h"
 #include "Errors.h"
 #include <png.h>
+#include <cstring>
 
 IOResult PNGImageProcessor::loadImage(const char *path, int componentsPerPixel, char *err) {
     png_byte header[8];    // 8 is the maximum size that can be checked
