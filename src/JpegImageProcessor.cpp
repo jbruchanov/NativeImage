@@ -197,7 +197,7 @@ int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
     ImageMetaData metaData = inputData.metaData;
     cinfo.image_width = (JDIMENSION) metaData.imageWidth;/* image width and height, in pixels */
     cinfo.image_height = (JDIMENSION) metaData.imageHeight;
-    cinfo.input_components = 3;        /* # of color components per pixel */
+    cinfo.input_components = RGB;        /* # of color components per pixel */
     cinfo.in_color_space = JCS_RGB;    /* colorspace of input image */
 
 
