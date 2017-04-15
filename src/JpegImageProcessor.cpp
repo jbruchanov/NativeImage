@@ -4,11 +4,9 @@
 
 #include "JpegImageProcessor.h"
 #include <setjmp.h>
-#include <cstring>
 #include "jpeglib.h"
 #include "Errors.h"
 #include "LogHelper.h"
-#include "Image.hpp"
 
 struct _Error {
     struct jpeg_error_mgr pub;    /* "public" fields */
@@ -18,7 +16,7 @@ struct _Error {
 typedef struct _Error *_ErrorPtr;
 
 int storeRawData(IOResult &rd, int componentsPerPixel, JSAMPROW row, int stride, int pixelIndex) {
-    bytep_t a, b, c, z;
+    bytep_t a, b, c;
     int i = 0;
     int pixelIndexStart = pixelIndex * componentsPerPixel;
     while (i < stride) {
