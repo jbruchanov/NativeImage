@@ -206,22 +206,19 @@ int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = metaData.imageWidth * RGB;    /* JSAMPLEs per row in image_buffer */
 
-    bytep_t tmp[inputData.componentsPerPixel == RGBA ? row_stride : 0];//just keep it empty it if we have non 1
+    bytep_t tmp[RGB];//just keep it empty it if we have non 1
     int pixelIndexStart = 0;
     while (cinfo.next_scanline < cinfo.image_height) {
         //convert back our internal bitmap format to jpeg format
-        if (inputData.componentsPerPixel == RGBA) {
-            for (int i = 0; i < row_stride; i += RGB) {
-                //convert back android internal format into jpeg expectation
-                tmp[i + 0] = inputData.data[pixelIndexStart + 3];
-                tmp[i + 1] = inputData.data[pixelIndexStart + 2];
-                tmp[i + 2] = inputData.data[pixelIndexStart + 1];
-                pixelIndexStart += RGBA;
-            }
-            row_pointer[0] = tmp;
-        } else if (inputData.componentsPerPixel == RGB) {
-            row_pointer[0] = inputData.data + (cinfo.next_scanline * metaData.imageWidth * inputData.componentsPerPixel);
+        int offset = inputData.componentsPerPixel == RGBA ? 1 : 0;
+        for (int i = 0; i < row_stride; i += RGB) {
+            //convert back android internal format into jpeg expectation
+            tmp[i + 0] = inputData.data[pixelIndexStart + 2 + offset];
+            tmp[i + 1] = inputData.data[pixelIndexStart + 1 + offset];
+            tmp[i + 2] = inputData.data[pixelIndexStart + 0 + offset];
+            pixelIndexStart += inputData.componentsPerPixel;
         }
+        row_pointer[0] = tmp;
         (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
 
