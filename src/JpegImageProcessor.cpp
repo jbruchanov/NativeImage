@@ -204,11 +204,11 @@ int JpegImageProcessor::saveImage(const char *path, InputData &inputData) {
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = metaData.imageWidth * RGB;    /* JSAMPLEs per row in image_buffer */
 
-    bytep_t tmp[RGB];//just keep it empty it if we have non 1
+    bytep_t tmp[row_stride];//just keep it empty it if we have non 1
     int pixelIndexStart = 0;
+    const int offset = inputData.componentsPerPixel == RGBA ? 1 : 0;
     while (cinfo.next_scanline < cinfo.image_height) {
         //convert back our internal bitmap format to jpeg format
-        int offset = inputData.componentsPerPixel == RGBA ? 1 : 0;
         for (int i = 0; i < row_stride; i += RGB) {
             //convert back android internal format into jpeg expectation
             tmp[i + 0] = inputData.data[pixelIndexStart + 2 + offset];
