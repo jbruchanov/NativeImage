@@ -23,6 +23,8 @@ call %ANDROID_NDK%\ndk-build NDK_DEBUG=%DEBUG%
 
 cd ..
 rmdir jni /S /Q
+del gdb.setup /S
+del gdbserver /S
 del libjpeg.so /S
 del libpng.so /S
 del libturbojpeg.so /S
