@@ -213,7 +213,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
  * Signature: (Landroid/graphics/Bitmap;II)I
  */
 JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScaledPixels
-        (JNIEnv *env, jobject obj, jobject bitmap, jint width, jint height) {
+        (JNIEnv *env, jobject obj, jobject bitmap, jint offsetX, jint offsetY, jint width, jint height) {
     AndroidBitmapInfo info;
     int v;
     v = AndroidBitmap_getInfo(env, bitmap, &info);
@@ -227,6 +227,10 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScal
         return (jint)INVALID_RESOLUTION;
     }
 
+    if ((offsetX + width) > metaData.imageWidth || (offsetY + height) > metaData.imageHeight) {
+        return (jint)INVALID_RESOLUTION;
+    }
+
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("Invalid bitmap format, expected RGBA_8888 was:%d (<android/Bitmap.h>@AndroidBitmapFormat)", (int)info.format);
         return (jint)INVALID_BITMAP_FORMAT;
@@ -236,7 +240,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScal
     v = AndroidBitmap_lockPixels(env, bitmap, (void **) &ptr);
     if (v == ANDROID_BITMAP_RESULT_SUCCESS) {
 
-        image->setPixelsScale(ptr, (int) width, (int) height);
+        image->setPixelsScale(ptr, (int) info.width, (int) info.height, (int) offsetX, (int) offsetY, (int) width, (int) height);
 
         v = AndroidBitmap_unlockPixels(env, bitmap);
         if (v != ANDROID_BITMAP_RESULT_SUCCESS) {

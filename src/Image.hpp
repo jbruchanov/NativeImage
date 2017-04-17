@@ -42,7 +42,7 @@ public:
 
     void setPixels(int* target);
     void setPixels(int* target, int offsetX, int offsetY, int width, int height);
-    void setPixelsScale(int* target, int width, int height);
+    void setPixelsScale(int *target, int outWidth, int outHeight, int offsetX, int offsetY, int width, int height);
     void rotate90(bool fast);
     void rotate180();
 
