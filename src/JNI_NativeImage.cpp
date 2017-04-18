@@ -276,6 +276,7 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
             //do nothing JAVA will throw the exception before
             break;
     }
+    return (jint) NO_ERR;
 }
 
 /*
