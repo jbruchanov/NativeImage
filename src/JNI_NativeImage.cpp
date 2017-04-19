@@ -16,7 +16,7 @@
 #include "Effect.h"
 #include "PNGImageProcessor.hpp"
 
-#define CLASS_NAME "com/scurab/andriod/nativeimage/NativeImage"
+#define CLASS_NAME "com/scurab/android/nativeimage/NativeImage"
 #define METHOD_SET_NATIVE_REF "onSetNativeRef"
 #define METHOD_GET_NATIVE_REF "getNativeRef"
 
@@ -47,11 +47,11 @@ ImageProcessor* getImageProcessor(int value) {
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _init
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1init
+JNIEXPORT void JNICALL Java_com_scurab_android_nativeimage_NativeImage__1init
         (JNIEnv *env, jobject thiz, jint componentsPerPixel) {
     jclass clazz = env->FindClass(CLASS_NAME);
     jmethodID methodId = env->GetMethodID(clazz, METHOD_SET_NATIVE_REF, "(J)V");//void onSetNativeRef(long ref)
@@ -63,11 +63,11 @@ JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1init
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _loadImage
  * Signature: (Ljava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadImage
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1loadImage
         (JNIEnv *env, jobject obj, jstring jpath, jint processor) {
     int result = JNI_ERR;
     const char *path = nullptr;
@@ -98,11 +98,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1loadIma
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _saveImage
  * Signature: (Ljava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1saveImage
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1saveImage
         (JNIEnv *env, jobject obj, jstring jpath, jint processor, jstring jsonArgs) {
     int result = JNI_ERR;
     const char *path = nullptr;
@@ -137,11 +137,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1saveIma
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _getMetaData
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1getMetaData
+JNIEXPORT jstring JNICALL Java_com_scurab_android_nativeimage_NativeImage__1getMetaData
         (JNIEnv *env, jobject obj) {
     Image *image = getObject(env, obj);
     const ImageMetaData metaData = image->getMetaData();
@@ -155,22 +155,22 @@ JNIEXPORT jstring JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1getM
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1dispose
+JNIEXPORT void JNICALL Java_com_scurab_android_nativeimage_NativeImage__1dispose
         (JNIEnv *env, jobject obj) {
     Image *image = getObject(env, obj);
     LOGD("JPEGImagePointer:%ld", (long)image);
     delete image;
 }
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _setPixels
  * Signature: (Ljava/lang/Object;)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixels
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1setPixels
         (JNIEnv *env, jobject obj, jobject bitmap, jint offsetX, jint offsetY, jint width, jint height) {
     AndroidBitmapInfo info;
     int v;
@@ -208,11 +208,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setPixe
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _setPixelsScale
  * Signature: (Landroid/graphics/Bitmap;II)I
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScaledPixels
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1setScaledPixels
         (JNIEnv *env, jobject obj, jobject bitmap, jint offsetX, jint offsetY, jint width, jint height) {
     AndroidBitmapInfo info;
     int v;
@@ -252,11 +252,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1setScal
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _rotate
  * Signature: (I)V
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1rotate
         (JNIEnv *env, jobject obj, jint angle, jboolean fast) {
     Image *image = getObject(env, obj);
     switch ((int) angle) {
@@ -280,11 +280,11 @@ JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1rotate
 }
 
 /*
- * Class:     com_scurab_andriod_nativeimage_NativeImage
+ * Class:     com_scurab_android_nativeimage_NativeImage
  * Method:    _applyEffect
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_com_scurab_andriod_nativeimage_NativeImage__1applyEffect
+JNIEXPORT jint JNICALL Java_com_scurab_android_nativeimage_NativeImage__1applyEffect
         (JNIEnv *env, jobject obj, jstring jsonArgs) {
     if (jsonArgs == nullptr) {
         return (jint)INVALID_JSON;
