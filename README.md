@@ -18,6 +18,20 @@ IDE: [CLion](https://www.jetbrains.com/clion/)<br/>
   - libpng-devel
   - oracle java jdk
 
+##### Compilation for Android
+- download [CrystaX](https://www.crystax.net/)
+- set `ANDROID_NDK` system variable to CrystaX folder
+- run `android/`[build.sh](https://github.com/jbruchanov/NativeImage/blob/master/android/build.sh) or [build.cmd](https://github.com/jbruchanov/NativeImage/blob/master/android/build.cmd)
+
+##### Android Debug
+- create simple project (not a library)
+- copy all files into `./app/src/main/cpp/` so structure will look like
+  - `./app/src/main/cpp/android/...`
+  - `./app/src/main/cpp/json11/...`
+  - `./app/src/main/cpp/src/...`
+- compile it
+- copy platform folders (x86, armeabi-v7a,...) from `android/obj/` into `./app/src/main/jniLibs/`. Structure will look like as [this](https://github.com/jbruchanov/NativeImageAndroid/tree/master/nativeimage/src/main/jniLibs).
+- start app to debug (be sure you have enabled native/dual debugger)
 
 License
 -------
